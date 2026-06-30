@@ -1,0 +1,79 @@
+---
+import "../styles/global.css";
+import Navbar from "../components/Navbar.astro";
+import Footer from "../components/Footer.astro";
+import CookieConsent from "../components/CookieConsent.astro";
+import ColorPalette from "../components/ColorPalette.astro";
+import AIAssistant from "../components/AIAssistant.astro";
+
+export interface Props {
+  lang: string;
+  t: any;
+}
+
+const { lang, t } = Astro.props;
+
+// Dynamic page title from URL
+function slugToKey(slug: string): string {
+  if (slug === '403bypass') return 'bypass403';
+  return slug.replace(/-([a-z])/g, (_, c) => c.toUpperCase());
+}
+const pathname = Astro.url.pathname;
+let pageTitle = 'HackIT - Penetration Testing & Security Framework';
+const isDocsPage = /\/[a-z]{2}\/docs\//.test(pathname);
+if (isDocsPage) {
+  const slugMatch = pathname.match(/\/[a-z]{2}\/docs\/([^/]+)/);
+  const slug = slugMatch ? slugMatch[1] : 'index';
+  if (slug === 'index') {
+    pageTitle = 'Documentation - HackIT';
+  } else {
+    const key = slugToKey(slug);
+    const docSection = (t.docs as any)[key];
+    if (docSection?.title) {
+      pageTitle = docSection.title + ' - HackIT';
+    }
+  }
+} else if (pathname === '/' || /\/[a-z]{2}\/?$/.test(pathname)) {
+  pageTitle = 'HackIT - Penetration Testing & Security Framework';
+}
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="HackIT - All-in-One Penetration Testing & Security Framework" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="alternate icon" href="/favicon.ico" />
+    <script is:inline>
+    (function() {
+      var theme;
+      try { theme = localStorage.getItem('theme'); } catch(e) {}
+      var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (theme === 'dark' || (!theme && prefersDark)) {
+        document.documentElement.classList.add('dark');
+      }
+    })();
+    </script>
+    <title>{pageTitle}</title>
+  </head>
+  <body class="theme-transition min-h-screen flex flex-col">
+    <Navbar lang={lang} t={t} />
+    <main class="flex-1 page-fade-in">
+      <slot />
+    </main>
+    <Footer lang={lang} t={t} />
+    <CookieConsent t={t} />
+    <ColorPalette />
+    <AIAssistant />
+  </body>
+</html>
+
+<script>
+import { initScrollReveal } from "../scripts/scrollReveal";
+initScrollReveal();
+</script>

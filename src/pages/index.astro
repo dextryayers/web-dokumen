@@ -1,0 +1,43 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { translations } from "../i18n/translations";
+import Hero from "../components/Hero.astro";
+import Marquee from "../components/Marquee.astro";
+import StatsSection from "../components/StatsSection.astro";
+import FeatureCards from "../components/FeatureCards.astro";
+import WhatIsHackIT from "../components/WhatIsHackIT.astro";
+import CLIShowcase from "../components/CLIShowcase.astro";
+import CoreTeam from "../components/CoreTeam.astro";
+import FeaturesGrid from "../components/FeaturesGrid.astro";
+import QnA from "../components/QnA.astro";
+import ToolsGrid from "../components/ToolsGrid.astro";
+import EnginePolyglot from "../components/EnginePolyglot.astro";
+
+const t = translations.en;
+---
+
+<Layout lang="en" t={t}>
+  <script is:inline>
+    (function () {
+      var supported = ["en", "it", "id", "ru", "zh", "ja"];
+      var saved;
+      try { saved = localStorage.getItem('lang'); } catch(e) {}
+      var lang = saved || (navigator.language || "en").substring(0, 2);
+      if (supported.indexOf(lang) === -1) lang = "en";
+      if (lang !== "en") {
+        window.location.replace("/" + lang + "/");
+      }
+    })();
+  </script>
+  <Hero t={t} lang="en" />
+  <Marquee />
+  <StatsSection t={t} />
+  <FeatureCards t={t} />
+  <WhatIsHackIT t={t} />
+  <EnginePolyglot t={t} />
+  <CLIShowcase t={t} />
+  <ToolsGrid t={t} />
+  <QnA t={t} />
+  <CoreTeam t={t} />
+  <FeaturesGrid t={t} />
+</Layout>

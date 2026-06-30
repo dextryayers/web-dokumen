@@ -1,0 +1,1128 @@
+---
+// AI Assistant - Right Side Panel
+---
+
+<div id="ai-root" class="fixed inset-0 z-50 pointer-events-none">
+  <!-- Backdrop -->
+  <div id="ai-backdrop" class="fixed inset-0 bg-black/60 backdrop-blur-sm transition-all duration-300 ease-out pointer-events-auto hidden" style="opacity:0"></div>
+
+  <!-- Toggle Tab - vertical rectangle on right edge -->
+  <button id="ai-toggle" class="fixed right-0 top-1/2 -translate-y-1/2 z-[60] pointer-events-auto flex flex-col items-center justify-center gap-1.5 w-9 h-24 rounded-l-lg rounded-r-none bg-[var(--accent)] text-white shadow-lg hover:shadow-xl hover:brightness-110 active:brightness-95 transition-all duration-200 cursor-pointer border-none outline-none select-none" aria-label="Toggle AI Assistant" aria-expanded="false">
+    <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+    <span class="text-[9px] font-bold uppercase tracking-widest" style="writing-mode:vertical-rl;text-orientation:mixed">AI</span>
+  </button>
+  <!-- Chat Panel -->
+  <div id="ai-panel" class="fixed right-0 top-0 h-full w-full sm:w-[440px] z-50 pointer-events-auto flex flex-col bg-[var(--card-bg)] border-l border-[var(--border)] shadow-2xl" style="box-shadow:-8px 0 48px rgba(0,0,0,0.18)">
+    <!-- Header -->
+    <div class="flex items-center gap-2 px-4 py-3 border-b border-[var(--border)] bg-[var(--bg-secondary)]/80 backdrop-blur-xl shrink-0 relative">
+      <div class="absolute inset-x-0 top-0 h-px header-shimmer"></div>
+      <div class="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-purple-500/15 to-transparent"></div>
+      <button id="ai-header-close" class="p-1.5 rounded-lg hover:bg-[var(--bg-tertiary)] text-[var(--text-muted)] hover:text-[var(--text)] transition-all duration-200 -ml-1 ripple-btn" title="Close">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-[var(--accent)]/20 to-purple-600/20 flex items-center justify-center ring-1 ring-[var(--accent)]/20 shrink-0">
+        <svg class="w-4 h-4 text-[var(--accent)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      </div>
+      <div class="flex-1 min-w-0">
+        <h3 class="font-semibold text-sm text-[var(--text)] tracking-tight">HackIT AI</h3>
+        <p class="text-[11px] text-[var(--text-muted)] flex items-center gap-1.5">
+          HackIT AI 2.1
+          <span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500/50"></span>
+          <span class="text-[10px] text-[var(--text-muted)]" id="ai-online-label">Online</span>
+        </p>
+      </div>
+      <button id="ai-clear" class="p-1.5 rounded-lg hover:bg-[var(--bg-tertiary)] text-[var(--text-muted)] hover:text-[var(--text)] transition-all duration-200 relative group/clear -mr-1 ripple-btn" title="Clear conversation">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+        <span class="absolute -bottom-8 left-1/2 -translate-x-1/2 px-2 py-1 rounded-md bg-[var(--bg-tertiary)] border border-[var(--border)] text-[10px] text-[var(--text-muted)] whitespace-nowrap opacity-0 group-hover/clear:opacity-100 transition-opacity pointer-events-none">Clear chat</span>
+      </button>
+    </div>
+
+    <!-- Messages -->
+    <div id="ai-messages" class="flex-1 overflow-y-auto px-4 py-3 scroll-smooth flex flex-col"></div>
+
+    <!-- Input Area -->
+    <div class="shrink-0 border-t border-[var(--border)] px-4 py-3 relative">
+      <div class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[var(--accent)]/20 to-transparent"></div>
+      <div class="flex items-center gap-2">
+        <div class="flex-1 relative">
+          <textarea id="ai-input" rows="1" placeholder="" class="w-full resize-none bg-[var(--bg-tertiary)] border border-[var(--border)] rounded-2xl px-4 py-[6px] pr-10 text-sm text-[var(--text)] placeholder:text-[var(--text-muted)] outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent)]/20 transition-all duration-200 max-h-32 leading-relaxed" style="scrollbar-width:thin"></textarea>
+        </div>
+        <button id="ai-send" class="w-9 h-9 rounded-xl bg-[var(--accent)] text-white active:scale-90 transition-all duration-200 flex items-center justify-center shrink-0 disabled:opacity-35 disabled:cursor-not-allowed shadow-lg shadow-[var(--accent)]/20 ripple-btn" disabled>
+          <svg class="w-[15px] h-[15px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+      </div>
+      <p class="text-[9px] text-[var(--text-muted)] mt-2.5 px-1 opacity-80 tracking-wider font-bold">Powered by HackIT AI - Created By <a href="https://haniipp.space" target="_blank" rel="noopener" class="text-[var(--accent)] hover:underline">Hanif Abdurrohim</a></p>
+    </div>
+  </div>
+</div>
+
+<style is:global>
+  /* ─── Header Shimmer ─── */
+  .header-shimmer {
+    background: linear-gradient(90deg, transparent, var(--accent), #8b5cf6, var(--accent), transparent);
+    background-size: 200% 100%;
+    animation: shimmerSlide 3s ease-in-out infinite;
+  }
+  @keyframes shimmerSlide {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  /* ─── Panel ─── */
+  #ai-panel {
+    transform: translateX(calc(100% + 2px));
+    transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+                visibility 0s 0.45s;
+    visibility: hidden;
+    will-change: transform;
+  }
+  #ai-panel.open {
+    transform: translateX(0);
+    visibility: visible;
+    transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+                visibility 0s 0s;
+  }
+
+  /* ─── Toggle Tab ─── */
+  #ai-toggle {
+    border-radius: 10px 0 0 10px;
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                opacity 0.3s ease,
+                visibility 0.3s ease,
+                width 0.3s ease,
+                background 0.3s ease,
+                box-shadow 0.3s ease;
+    z-index: 60;
+    transform-origin: right center;
+    backdrop-filter: blur(8px);
+  }
+  #ai-toggle:hover {
+    width: 42px;
+    background: var(--accent-hover);
+  }
+  #ai-toggle.hidden-toggle {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateX(16px) scale(0.85);
+    animation: none;
+  }
+  #ai-toggle:not(.hidden-toggle) {
+    animation: toggleGlow 3s ease-in-out infinite;
+  }
+  @keyframes toggleGlow {
+    0%, 100% { box-shadow: 0 0 0 0 transparent; }
+    50% { box-shadow: 0 0 20px 2px var(--accent-glow); }
+  }
+
+  /* ─── Backdrop ─── */
+  #ai-backdrop {
+    transition: opacity 0.4s ease-out, visibility 0s 0.4s;
+    visibility: hidden;
+    z-index: 40;
+  }
+  #ai-backdrop.show {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.4s ease-out, visibility 0s 0s;
+  }
+
+  /* ─── Input ─── */
+  #ai-input:focus {
+    box-shadow: 0 0 0 2px var(--accent-glow), inset 0 0 0 1px var(--accent);
+  }
+  #ai-input::placeholder {
+    color: var(--text-muted);
+    opacity: 0.55;
+    font-size: 13px;
+  }
+
+  /* ─── Send Button ─── */
+  #ai-send:not(:disabled) {
+    cursor: pointer;
+  }
+  #ai-send:not(:disabled):active {
+    transform: scale(0.9);
+  }
+  #ai-send:not(:disabled):hover {
+    box-shadow: 0 0 24px var(--accent-glow);
+    filter: brightness(1.12);
+  }
+  #ai-send:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+
+  /* ─── Messages Container ─── */
+  #ai-messages {
+    gap: 0;
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+    align-items: stretch;
+    scroll-behavior: smooth;
+  }
+  #ai-messages:hover {
+    scrollbar-color: var(--border) transparent;
+  }
+  #ai-messages::-webkit-scrollbar { width: 4px; }
+  #ai-messages::-webkit-scrollbar-track { background: transparent; }
+  #ai-messages::-webkit-scrollbar-thumb {
+    background: transparent;
+    border-radius: 8px;
+    transition: background 0.3s ease;
+  }
+  #ai-messages:hover::-webkit-scrollbar-thumb {
+    background: var(--border);
+  }
+  #ai-messages:hover::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+  /* ─── Message Rows ─── */
+  .msg-row {
+    display: flex;
+    width: 100%;
+    padding: 5px 0;
+    animation: msgIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .msg-row.msg-user {
+    justify-content: flex-end;
+  }
+  .msg-row + .msg-row {
+    margin-top: 1px;
+  }
+
+  /* ─── Avatars ─── */
+  .msg-avatar {
+    width: 28px;
+    min-width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+    margin-top: 6px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    background: var(--bg-tertiary);
+  }
+  .msg-avatar img, .msg-avatar svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  /* ─── Message Column ─── */
+  .msg-col {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    max-width: 82%;
+  }
+  .msg-row.msg-user .msg-col {
+    max-width: 76%;
+  }
+  .msg-time {
+    font-weight: 700;
+    font-size: 9px;
+    color: var(--text-muted);
+    opacity: 0.5;
+    letter-spacing: 0.02em;
+  }
+  .msg-time.user {
+    text-align: right;
+    padding: 0 4px 2px;
+  }
+  .msg-time.ai {
+    margin-left: auto;
+    font-size: 8px;
+    opacity: 0.4;
+  }
+
+  /* ─── Message Grouping ─── */
+  .msg-row.msg-user + .msg-row.msg-user {
+    margin-top: 0;
+    padding-top: 0;
+  }
+  .msg-row.msg-user + .msg-row.msg-user .msg-content.user {
+    border-radius: 16px 4px 4px 16px;
+  }
+  .msg-row.msg-user + .msg-row.msg-user .msg-avatar {
+    visibility: hidden;
+  }
+  .msg-row.msg-user + .msg-row.msg-user .msg-time {
+    visibility: hidden;
+  }
+  .msg-row.msg-ai + .msg-row.msg-ai {
+    margin-top: 0;
+    padding-top: 0;
+  }
+  .msg-row.msg-ai + .msg-row.msg-ai .msg-content.ai {
+    border-radius: 4px 16px 16px 4px;
+  }
+  .msg-row.msg-ai + .msg-row.msg-ai .msg-bubble.ai .msg-header {
+    display: none;
+  }
+  .msg-row.msg-ai + .msg-row.msg-ai .msg-avatar {
+    visibility: hidden;
+  }
+  .msg-row.msg-ai + .msg-row.msg-ai .msg-time {
+    visibility: hidden;
+  }
+  @keyframes msgIn {
+    from { opacity: 0; transform: translateY(10px) scale(0.97); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .msg-bubble {
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .msg-bubble .msg-header {
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--text-muted);
+    margin-bottom: 3px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    letter-spacing: 0.02em;
+    padding-left: 2px;
+    width: 100%;
+  }
+  .msg-badge {
+    font-size: 7.5px;
+    padding: 1px 6px;
+    border-radius: 999px;
+    background: var(--accent);
+    color: #fff;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    opacity: 0.8;
+  }
+
+  .msg-content {
+    border-radius: 16px;
+    padding: 10px 14px;
+    line-height: 1.6;
+    font-size: 13px;
+  }
+  .msg-content.ai {
+    background: var(--bg-secondary);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04), 0 2px 8px rgba(0,0,0,0.02);
+  }
+  .msg-content.user {
+    background: linear-gradient(135deg, var(--accent), color-mix(in srgb, var(--accent) 85%, #fff));
+    color: #fff;
+    border-radius: 16px 16px 4px 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+  .msg-content.user p { color: #fff; }
+
+  .msg-content p { margin-bottom: 6px; font-size: 13px; line-height: 1.6; }
+  .msg-content p:last-child { margin-bottom: 0; }
+  .msg-content ul, .msg-content ol { padding-left: 18px; margin-bottom: 6px; font-size: 13px; }
+  .msg-content li { margin-bottom: 3px; }
+  .msg-content strong { color: var(--text); }
+  .msg-content.user strong { color: #fff; }
+  .msg-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  .msg-content .code-block {
+    margin: 8px 0;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    background: var(--bg-tertiary);
+  }
+  .msg-content .code-lang {
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    padding: 4px 12px;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border);
+    opacity: 0.6;
+  }
+  .msg-content pre {
+    background: var(--bg-tertiary);
+    padding: 12px 14px;
+    margin: 0;
+    overflow-x: auto;
+    font-size: 12px;
+    line-height: 1.55;
+    border: none;
+    border-radius: 0;
+  }
+  .msg-content code {
+    font-size: 12px;
+    padding: 1px 5px;
+    border-radius: 4px;
+    background: var(--bg-tertiary);
+    color: var(--accent);
+  }
+  .msg-content pre code { background: none; padding: 0; color: inherit; }
+
+  /* ─── Follow-up Chips ─── */
+  .followup-chip {
+    font-size: 10px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    background: var(--bg-secondary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
+  }
+  .followup-chip:hover {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+  }
+  .followup-chip:active {
+    transform: scale(0.95);
+  }
+
+  /* ─── AI Chips ─── */
+  .ai-chip {
+    user-select: none;
+    -webkit-user-select: none;
+    background: var(--bg-secondary);
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    cursor: pointer;
+    opacity: 0;
+    transform: translateY(6px);
+    animation: chipIn 0.35s ease forwards;
+  }
+  .ai-chip:nth-child(1) { animation-delay: 0.5s; }
+  .ai-chip:nth-child(2) { animation-delay: 0.6s; }
+  .ai-chip:nth-child(3) { animation-delay: 0.7s; }
+  .ai-chip:nth-child(4) { animation-delay: 0.8s; }
+  @keyframes chipIn {
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .ai-chip:hover {
+    background: var(--accent);
+    color: white !important;
+    border-color: var(--accent);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+  .ai-chip:active {
+    transform: scale(0.92);
+  }
+
+  .ai-followup {
+    user-select: none;
+    -webkit-user-select: none;
+    font-size: 10px;
+    padding: 4px 10px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    background: var(--bg-secondary);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    cursor: pointer;
+  }
+  .ai-followup:hover {
+    background: var(--accent) !important;
+    color: white !important;
+    border-color: var(--accent) !important;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+  }
+  .ai-followup:active {
+    transform: scale(0.93);
+  }
+
+  /* ─── Feedback Buttons ─── */
+  .ai-feedback {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid var(--border);
+  }
+  .fb-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    opacity: 0.4;
+  }
+  .fb-btn:hover {
+    opacity: 1;
+    background: var(--bg-tertiary);
+  }
+  .fb-like.active {
+    opacity: 1;
+    color: #22c55e;
+    background: rgba(34, 197, 94, 0.1);
+  }
+  .fb-dislike.active {
+    opacity: 1;
+    color: #ef4444;
+    background: rgba(239, 68, 68, 0.1);
+  }
+  .fb-btn.permanent {
+    cursor: default;
+  }
+  .fb-btn.permanent:hover {
+    background: inherit;
+  }
+
+  /* ─── Copy Button ─── */
+  .msg-row.msg-ai {
+    position: relative;
+  }
+  .ai-copy-btn {
+    opacity: 0;
+    transition: opacity 0.15s ease;
+  }
+  .msg-row.msg-ai:hover .ai-copy-btn {
+    opacity: 1;
+  }
+  .ai-copy-btn:hover {
+    opacity: 1;
+  }
+
+  /* ─── Typing Indicator ─── */
+  .typing-dot {
+    animation: typingBounce 1.4s ease-in-out infinite;
+    background: var(--accent);
+    border-radius: 999px;
+  }
+  .typing-dot:nth-child(2) { animation-delay: 0.15s; }
+  .typing-dot:nth-child(3) { animation-delay: 0.3s; }
+  @keyframes typingBounce {
+    0%, 80%, 100% { transform: translateY(0); opacity: 0.35; }
+    40% { transform: translateY(-6px); opacity: 1; }
+  }
+
+  /* ─── Ripple ─── */
+  .ripple-btn {
+    position: relative;
+    overflow: hidden;
+  }
+  .ripple-btn .ripple {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.3);
+    transform: scale(0);
+    animation: rippleAnim 0.5s ease-out;
+    pointer-events: none;
+  }
+  @keyframes rippleAnim {
+    to { transform: scale(4); opacity: 0; }
+  }
+
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  .animate-spin {
+    animation: spin 1s linear infinite;
+  }
+
+  /* ─── Response Content (fallback) ─── */
+
+  .text-green-500 { color: #22c55e; }
+
+  /* ─── Responsive ─── */
+  @media (max-width: 639px) {
+    #ai-panel { width: 100%; max-width: 100%; }
+    #ai-toggle { width: 32px; height: 100px; }
+    #ai-toggle svg { width: 14px; height: 14px; }
+
+    #ai-messages { padding: 10px 12px; }
+    #ai-input { font-size: 0.8rem; padding: 10px 12px; }
+    #ai-input::placeholder { font-size: 0.8rem; }
+    .msg-content pre { font-size: 0.75rem; padding: 10px 12px; }
+    .msg-content code { font-size: 0.75rem; }
+    .msg-content { padding: 9px 12px; border-radius: 14px; }
+    .msg-content.user { border-radius: 14px 14px 4px 14px; }
+    .msg-col { max-width: 88% !important; }
+    .msg-row.msg-user .msg-col { max-width: 85% !important; }
+    #ai-send { width: 36px; height: 42px; }
+    #ai-send svg { width: 14px; height: 14px; }
+    .msg-avatar { width: 22px; min-width: 22px; height: 22px; margin-top: 8px; }
+    .msg-row { gap: 5px; padding: 4px 0; }
+  }
+
+  @media (min-width: 640px) and (max-width: 1023px) {
+    #ai-panel { width: 400px; max-width: 400px; }
+    #ai-messages { padding: 12px 14px; }
+  }
+</style>
+
+<script>
+(function() {
+  function getLang() {
+    try {
+      var stored = localStorage.getItem('lang');
+      if (stored && ['en','id','it','ru','zh','ja'].indexOf(stored) !== -1) return stored;
+      var m = window.location.pathname.match(/^\/(en|id|it|ru|zh|ja)\//);
+      if (m) return m[1];
+    } catch(e) {}
+    return 'en';
+  }
+  var lang = getLang();
+  var ai18n = {
+    en: { welcome: "Hello! I'm **HackIT AI**, your intelligent assistant for the HackIT security framework. I can help with:\n\n- Installation & setup\n- Network scanning & recon\n- Vulnerability detection\n- CLI commands & usage\n- Architecture & modules\n\nAsk me anything!", chips: [['How do I install HackIT?','Install'],['How do I scan a network?','Network Scan'],['Apa itu HackIT? (ID)','Bahasa ID'],['List all CLI commands','CLI Commands']], placeholder: 'Ask HackIT AI anything...', online: 'Online', langInst: 'IMPORTANT: Always respond in **English**. If the user writes in another language, match their language.', fw: [['What are the prerequisites?','How to build from source?','Platform-specific tips?'],['What scan modes are available?','How to use stealth mode?','Port scanning best practices?'],['How to use autopilot?','Interactive console guide?','All available flags?'],['How do AI agents work?','What languages are used?','Module development guide?'],['How many agents?','Agent orchestration?','AI provider setup?'],['How to test for XSS?','How to detect SQL injection?','Reporting vulnerabilities?'],['Troubleshooting guide?','Common issues?','How to report bugs?'],['What wireless attacks are supported?','PMKID capture guide?','WPA3 cracking?'],['What OSINT sources are available?','Subdomain enumeration?','Email recon?'],['Tell me more','Show me an example','Any alternatives?']] },
+    id: { welcome: "Halo! Saya **HackIT AI**, asisten cerdas untuk framework keamanan HackIT. Saya bisa membantu:\n\n- Instalasi & pengaturan\n- Pemindaian jaringan & recon\n- Deteksi kerentanan\n- Perintah CLI & penggunaan\n- Arsitektur & modul\n\nTanyakan apa saja!", chips: [['Bagaimana cara install HackIT?','Instalasi'],['Cara scan jaringan?','Pindai Jaringan'],['What is HackIT? (EN)','English'],['Daftar perintah CLI','Perintah CLI']], placeholder: 'Tanyakan apa saja ke HackIT AI...', online: 'Online', langInst: 'PENTING: Selalu jawab dalam **Bahasa Indonesia**. Jika pengguna bertanya dalam bahasa lain, tetap jawab dalam Bahasa Indonesia.', fw: [['Apa saja prasyaratnya?','Cara build dari source?','Tips spesifik platform?'],['Mode scan apa saja?','Cara pakai stealth mode?','Best practice port scan?'],['Cara pakai autopilot?','Panduan console interaktif?','Semua flag tersedia?'],['Bagaimana cara kerja AI agent?','Bahasa apa yang dipakai?','Panduan module development?'],['Berapa banyak agent?','Orkestrasi agent?','Setup provider AI?'],['Cara test XSS?','Cara deteksi SQL injection?','Melaporkan kerentanan?'],['Panduan troubleshooting?','Masalah umum?','Cara lapor bug?'],['Serangan wireless apa saja?','Panduan capture PMKID?','Cracking WPA3?'],['Sumber OSINT apa saja?','Enumerasi subdomain?','Recon email?'],['Ceritakan lebih lanjut','Berikan contoh','Alternatif lainnya?']] },
+    it: { welcome: "Ciao! Sono **HackIT AI**, il tuo assistente per il framework di sicurezza HackIT. Posso aiutarti con:\n\n- Installazione e configurazione\n- Scansione di rete e ricognizione\n- Rilevamento vulnerabilità\n- Comandi CLI e uso\n- Architettura e moduli\n\nChiedimi qualsiasi cosa!", chips: [['Come installare HackIT?','Installazione'],['Come scansionare una rete?','Scansione Rete'],['What is HackIT? (EN)','English'],['Elenco comandi CLI','Comandi CLI']], placeholder: 'Chiedi qualsiasi cosa a HackIT AI...', online: 'Online', langInst: 'IMPORTANTE: Rispondi sempre in **Italiano**. Se l\'utente scrive in altre lingue, usa comunque l\'italiano.', fw: [['Quali sono i prerequisiti?','Come compilare da sorgente?','Suggerimenti specifici per piattaforma?'],['Quali modalità di scan?','Come usare stealth mode?','Best practice scan porte?'],['Come usare autopilot?','Guida console interattiva?','Tutte le flag disponibili?'],['Come funzionano gli agenti AI?','Quali linguaggi?','Guida sviluppo moduli?'],['Quanti agenti?','Orchestrazione agenti?','Setup provider AI?'],['Come testare XSS?','Come rilevare SQL injection?','Segnalare vulnerabilità?'],['Guida troubleshooting?','Problemi comuni?','Come segnalare bug?'],['Attacchi wireless supportati?','Guida cattura PMKID?','Cracking WPA3?'],['Fonti OSINT disponibili?','Enumerazione sottodomini?','Recon email?'],['Dimmi di più','Fammi un esempio','Alternative?']] },
+    ru: { welcome: "Привет! Я **HackIT AI**, ваш интеллектуальный помощник по фреймворку безопасности HackIT. Я могу помочь с:\n\n- Установкой и настройкой\n- Сканированием сети и разведкой\n- Обнаружением уязвимостей\n- Командами CLI и использованием\n- Архитектурой и модулями\n\nСпрашивайте что угодно!", chips: [['Как установить HackIT?','Установка'],['Как сканировать сеть?','Сканирование'],['What is HackIT? (EN)','English'],['Список команд CLI','Команды CLI']], placeholder: 'Спросите HackIT AI о чем угодно...', online: 'Онлайн', langInst: 'ВАЖНО: Всегда отвечай на **Русском**. Если пользователь пишет на другом языке, всё равно отвечай по-русски.', fw: [['Какие требования?','Сборка из исходников?','Советы по платформе?'],['Какие режимы сканирования?','Как использовать stealth?','Лучшие практики сканирования?'],['Как использовать автопилот?','Руководство по консоли?','Все доступные флаги?'],['Как работают AI агенты?','Какие языки?','Руководство по модулям?'],['Сколько агентов?','Оркестрация агентов?','Настройка AI провайдера?'],['Как тестировать XSS?','Как найти SQL инъекции?','Сообщить об уязвимости?'],['Руководство по устранению?','Частые проблемы?','Как сообщить об ошибке?'],['Какие беспроводные атаки?','Захват PMKID?','Взлом WPA3?'],['Какие источники OSINT?','Поиск поддоменов?','Разведка email?'],['Расскажи подробнее','Покажи пример','Альтернативы?']] },
+    zh: { welcome: "你好！我是 **HackIT AI**，您的 HackIT 安全框架智能助手。我可以帮助您：\n\n- 安装和设置\n- 网络扫描和侦察\n- 漏洞检测\n- CLI 命令和使用\n- 架构和模块\n\n请问我任何问题！", chips: [['如何安装 HackIT？','安装'],['如何扫描网络？','网络扫描'],['What is HackIT? (EN)','English'],['CLI 命令列表','CLI 命令']], placeholder: '向 HackIT AI 提问...', online: '在线', langInst: '重要：始终用**中文**回答。如果用户用其他语言提问，仍然用中文回答。', fw: [['先决条件是什么？','如何从源码构建？','平台特定提示？'],['有哪些扫描模式？','如何使用隐身模式？','端口扫描最佳实践？'],['如何使用自动驾驶？','交互式控制台指南？','所有可用标志？'],['AI 代理如何工作？','使用哪些语言？','模块开发指南？'],['有多少代理？','代理编排？','AI 提供商设置？'],['如何测试 XSS？','如何检测 SQL 注入？','报告漏洞？'],['故障排除指南？','常见问题？','如何报告错误？'],['支持哪些无线攻击？','PMKID 捕获指南？','WPA3 破解？'],['有哪些 OSINT 来源？','子域名枚举？','电子邮件侦察？'],['告诉我更多','给我举个例子','有其他选择吗？']] },
+    ja: { welcome: "こんにちは！**HackIT AI** は、HackIT セキュリティフレームワークのインテリジェントアシスタントです。以下のサポートが可能です：\n\n- インストールとセットアップ\n- ネットワークスキャンと偵察\n- 脆弱性検出\n- CLI コマンドと使用方法\n- アーキテクチャとモジュール\n\n何でも質問してください！", chips: [['HackITのインストール方法は？','インストール'],['ネットワークスキャン方法は？','スキャン'],['What is HackIT? (EN)','English'],['CLIコマンド一覧','CLIコマンド']], placeholder: 'HackIT AI に質問する...', online: 'オンライン', langInst: '重要：常に**日本語**で回答してください。ユーザーが他の言語で書いても、日本語で回答すること。', fw: [['前提条件は？','ソースからビルドする方法？','プラットフォーム別のヒント？'],['スキャンモードは？','ステルスモードの使い方？','ポートスキャンのベストプラクティス？'],['オートパイロットの使い方？','対話型コンソールガイド？','利用可能なフラグ？'],['AIエージェントの仕組み？','使用言語は？','モジュール開発ガイド？'],['エージェント数は？','エージェントオーケストレーション？','AIプロバイダー設定？'],['XSSのテスト方法？','SQLインジェクションの検出方法？','脆弱性の報告？'],['トラブルシューティング？','一般的な問題？','バグの報告方法？'],['対応している無線攻撃は？','PMKIDキャプチャガイド？','WPA3クラッキング？'],['OSINTソースは？','サブドメイン列挙？','メール偵察？'],['詳しく教えて','例を見せて','他の方法は？']] }
+  };
+  var t = ai18n[lang] || ai18n.en;
+  const SYSTEM_PROMPT = `## CRITICAL LANGUAGE RULE
+${t.langInst}
+
+You are HackIT AI, an elite AI assistant specialized in cybersecurity, penetration testing, and the HackIT security framework.
+
+ABOUT YOU:
+- Name: HackIT AI
+- Created by Hanif Abdurrohim (NOT Google, NOT OpenAI, NOT any other company)
+- Built into the HackIT documentation website at hackit.dev
+- You run on HackIT AI 2.1
+- Current date: 2026
+
+YOUR PERSONALITY:
+- You are enthusiastic, confident, and passionate about cybersecurity
+- You explain complex security concepts in simple terms
+- You are concise but thorough — give enough detail to be useful
+- You proactively suggest next steps and related commands
+- You use markdown formatting for code examples
+- You adapt to the user's selected language automatically
+
+CORE EXPERTISE:
+1. Coding: Rust, Python, Go, C/C++, Lua, Ruby, C#, JavaScript, TypeScript, Bash
+2. Bug hunting & vulnerability discovery (XSS, SQLi, RCE, SSRF, IDOR, etc.)
+3. Network security: port scanning, OS fingerprinting, service detection
+4. Web security: fuzzing, parameter discovery, header auditing
+5. Wireless security: 802.11 auditing, WPA3 cracking, deauth attacks
+6. OSINT: 100+ intelligence sources, subdomain enumeration, recon
+7. Cryptography: hash cracking, TLS analysis, certificate auditing
+
+HACKIT FRAMEWORK KNOWLEDGE (be specific):
+- HackIT v2.1.0 Apex is a Hexa-Engine Security Suite
+- Architecture: 7+ languages — Python (orchestrator), Go (concurrent scanning), C/C++ (raw packets), Rust (crypto), Lua (NSE scripts), C# (wireless), Ruby (Metasploit bridge)
+- CLI entry: python hackit/main.py or hackit command
+- CLI groups: ports, web, vuln, recon, ssl, util
+- Key modules: port scanner, dir finder, header audit, tech detection, web fuzzer, js analysis, params, 403 bypass, subdomain, network scanner, ssl/tls, cve lookup, xss, sqli, redirect, rce, atomix, webui, social engineering, nse scripts
+- AI: 25 autonomous swarm agents with CVSS v4.0 scoring
+- OSINT: SpiderFoot-based with Shodan, Censys, AlienVault, VirusTotal, etc.
+- Wireless: C#-based native Windows 802.11 attack suite
+- Supports Linux, Windows, macOS, ARM
+- Configuration: YAML-based (~/.hackit/config.yaml)
+- Reporting: HTML, PDF, JSON formats
+
+RESPONSE GUIDELINES:
+- Use markdown for code blocks with language tags
+- Always show CLI command examples when relevant
+- Reference documentation pages when helpful
+- If asked "who created you", always answer: "Hanif Abdurrohim"
+- Provide working command examples that actually exist in HackIT
+- When discussing vulnerabilities, include mitigation advice
+- Keep responses under 400 words unless asked for detail`;
+
+  const root = document.getElementById('ai-root');
+  const toggle = document.getElementById('ai-toggle');
+  const panel = document.getElementById('ai-panel');
+  const backdrop = document.getElementById('ai-backdrop');
+  const messages = document.getElementById('ai-messages');
+  const input = document.getElementById('ai-input');
+  const sendBtn = document.getElementById('ai-send');
+  const clearBtn = document.getElementById('ai-clear');
+  const headerClose = document.getElementById('ai-header-close');
+
+  if (!panel || !messages || !input || !sendBtn || !clearBtn) return;
+
+  let isOpen = false;
+  let isLoading = false;
+  let conversation = [];
+  let lastRequestTime = 0;
+  const MIN_REQUEST_INTERVAL = 3000;
+  var userSeed = 'user_' + Math.random().toString(36).substring(2, 8);
+  var userAvatarUrl = 'https://api.dicebear.com/9.x/lorelei/svg?seed=' + userSeed + '&backgroundColor=b6e3f4,c0aede,d1d4f9,ffd5dc,ffdfbf&backgroundType=solid,gradientLinear&radius=50';
+  var botAvatarSvg = '<svg viewBox="0 0 100 100" fill="none"><rect width="100" height="100" rx="50" fill="var(--accent)"/><rect x="28" y="22" width="44" height="44" rx="10" fill="white" opacity="0.15"/><rect x="32" y="32" width="36" height="28" rx="6" fill="white" opacity="0.9"/><circle cx="42" cy="40" r="4" fill="var(--accent)"/><circle cx="58" cy="40" r="4" fill="var(--accent)"/><path d="M40 50 Q50 56 60 50" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" fill="none"/><rect x="38" y="62" width="24" height="6" rx="3" fill="white" opacity="0.7"/><rect x="42" y="70" width="6" height="14" rx="3" fill="white" opacity="0.5"/><rect x="52" y="70" width="6" height="14" rx="3" fill="white" opacity="0.5"/></svg>';
+
+  function getApiKey() {
+    try {
+      return (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.PUBLIC_GEMINI_API_KEY) || '';
+    } catch(e) {
+      return '';
+    }
+  }
+
+  // Enable/disable send button based on input
+  function createRipple(e, btn) {
+    var rect = btn.getBoundingClientRect();
+    var size = Math.max(rect.width, rect.height);
+    var x = e.clientX - rect.left - size / 2;
+    var y = e.clientY - rect.top - size / 2;
+    var ripple = document.createElement('span');
+    ripple.className = 'ripple';
+    ripple.style.width = ripple.style.height = size + 'px';
+    ripple.style.left = x + 'px';
+    ripple.style.top = y + 'px';
+    btn.appendChild(ripple);
+    setTimeout(function() { ripple.remove(); }, 500);
+  }
+
+  function updateSendBtn() {
+    var val = input.value.trim();
+    sendBtn.disabled = !val;
+  }
+
+  function togglePanel() {
+    isOpen = !isOpen;
+    panel.classList.toggle('open', isOpen);
+    if (toggle) toggle.classList.toggle('hidden-toggle', isOpen);
+    if (backdrop) {
+      if (isOpen) {
+        backdrop.classList.remove('hidden');
+        requestAnimationFrame(function() {
+          backdrop.classList.add('show');
+        });
+      } else {
+        backdrop.classList.remove('show');
+        backdrop.addEventListener('transitionend', function handler() {
+          backdrop.classList.add('hidden');
+          backdrop.removeEventListener('transitionend', handler);
+        }, { once: true });
+      }
+    }
+    if (isOpen) {
+      setTimeout(function() { input.focus(); }, 400);
+      scrollToBottom();
+    }
+  }
+
+  function isNearBottom() {
+    var threshold = 80;
+    return messages.scrollHeight - messages.scrollTop - messages.clientHeight < threshold;
+  }
+
+  function scrollToBottom(force) {
+    if (!force && !isNearBottom()) return;
+    requestAnimationFrame(function() {
+      messages.scrollTo({ top: messages.scrollHeight, behavior: 'smooth' });
+    });
+  }
+
+  function autoResize() {
+    input.style.height = 'auto';
+    input.style.height = Math.min(input.scrollHeight, 128) + 'px';
+    updateSendBtn();
+  }
+
+  function createAvatar(role) {
+    var el = document.createElement('div');
+    el.className = 'msg-avatar';
+    if (role === 'user') {
+      var img = document.createElement('img');
+      img.src = userAvatarUrl;
+      img.alt = 'You';
+      img.loading = 'lazy';
+      el.appendChild(img);
+    } else {
+      el.innerHTML = botAvatarSvg;
+    }
+    return el;
+  }
+
+  function msgTime() {
+    var d = new Date();
+    return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }
+
+  function addMessage(role, text) {
+    var row = document.createElement('div');
+    row.className = 'msg-row msg-' + role;
+    var ts = msgTime();
+
+    if (role === 'user') {
+      var timeEl = document.createElement('div');
+      timeEl.className = 'msg-time user';
+      timeEl.textContent = ts;
+
+      var content = document.createElement('div');
+      content.className = 'msg-content user';
+      content.textContent = text;
+
+      var bubble = document.createElement('div');
+      bubble.className = 'msg-bubble';
+      bubble.appendChild(content);
+
+      var col = document.createElement('div');
+      col.className = 'msg-col';
+      col.appendChild(timeEl);
+      col.appendChild(bubble);
+
+      row.appendChild(col);
+      row.appendChild(createAvatar(role));
+    } else {
+      row.appendChild(createAvatar(role));
+      var aContent = document.createElement('div');
+      aContent.className = 'msg-content ai';
+
+      var responseHtml = renderMarkdown(text);
+      aContent.innerHTML = responseHtml;
+
+      var aBubble = document.createElement('div');
+      aBubble.className = 'msg-bubble ai';
+      aBubble.innerHTML = '<div class="msg-header">HackIT AI <span class="msg-badge">Beta</span> <span class="msg-time ai">' + ts + '</span></div>';
+      aBubble.appendChild(aContent);
+
+      var followups = generateFollowups(text);
+      if (followups.length) {
+        var fDiv = document.createElement('div');
+        fDiv.className = 'flex flex-wrap gap-1 mt-2 pt-2 border-t border-[var(--border)]';
+        followups.forEach(function(f) {
+          var btn = document.createElement('button');
+          btn.className = 'ai-followup text-[10px] px-2 py-1 rounded-md border border-[var(--border)] text-[var(--text-muted)] hover:text-white hover:border-[var(--accent)] hover:bg-[var(--accent)] transition-all duration-200 cursor-pointer';
+          btn.textContent = f;
+          btn.dataset.prompt = f;
+          fDiv.appendChild(btn);
+        });
+        aBubble.appendChild(fDiv);
+      }
+
+      var feedback = document.createElement('div');
+      feedback.className = 'ai-feedback';
+feedback.innerHTML = '<button class="fb-btn fb-like" title="Like"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg></button><button class="fb-btn fb-dislike" title="Dislike"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3H10zM17 2h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"/></svg></button>';
+      aBubble.appendChild(feedback);
+
+      var col = document.createElement('div');
+      col.className = 'msg-col';
+      col.appendChild(aBubble);
+
+      row.appendChild(col);
+    }
+
+    messages.appendChild(row);
+    scrollToBottom();
+  }
+
+  function generateFollowups(text) {
+    var fw = (ai18n[lang] || ai18n.en).fw;
+    var t = text.toLowerCase();
+    if (t.indexOf('install') !== -1 || t.indexOf('setup') !== -1 || t.indexOf('instal') !== -1)
+      return fw[0];
+    if (t.indexOf('scan') !== -1 || t.indexOf('network') !== -1 || t.indexOf('port') !== -1)
+      return fw[1];
+    if (t.indexOf('cli') !== -1 || t.indexOf('command') !== -1 || t.indexOf('perintah') !== -1)
+      return fw[2];
+    if (t.indexOf('architect') !== -1 || t.indexOf('engine') !== -1 || t.indexOf('arsitektur') !== -1)
+      return fw[3];
+    if (t.indexOf('ai') !== -1 || t.indexOf('agent') !== -1 || t.indexOf('swarm') !== -1)
+      return fw[4];
+    if (t.indexOf('xss') !== -1 || t.indexOf('sqli') !== -1 || t.indexOf('vuln') !== -1 || t.indexOf('bug') !== -1)
+      return fw[5];
+    if (t.indexOf('error') !== -1 || t.indexOf('fail') !== -1 || t.indexOf('problem') !== -1)
+      return fw[6];
+    if (t.indexOf('wireless') !== -1 || t.indexOf('wifi') !== -1 || t.indexOf('802.11') !== -1)
+      return fw[7];
+    if (t.indexOf('osint') !== -1 || t.indexOf('recon') !== -1 || t.indexOf('reconnaissance') !== -1)
+      return fw[8];
+    return fw[9];
+  }
+
+  function sendViaChip(prompt) {
+    if (isLoading) return;
+    input.value = prompt;
+    updateSendBtn();
+    sendMessage();
+  }
+
+  function escapeHtml(text) {
+    var div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+  function renderMarkdown(text) {
+    var html = escapeHtml(text);
+    html = html.replace(/```(\w*)\n?([\s\S]*?)```/g, function(m, lang, code) {
+      var label = lang ? '<div class="code-lang">' + lang + '</div>' : '';
+      return '<div class="code-block">' + label + '<pre><code>' + code + '</code></pre></div>';
+    });
+    html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+    html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+    html = html.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+    html = html.replace(/^- (.+)$/gm, '<li>$1</li>');
+    html = html.replace(/((?:<li>.*?<\/li>(?:\n|$)?)+)/g, '<ul>$1</ul>');
+    var paragraphs = html.split(/\n{2,}/);
+    if (paragraphs.length > 1 || !/^<(?:pre|ul|ol|h\d)/.test(html)) {
+      html = paragraphs.map(function(p) {
+        p = p.trim();
+        if (!p) return '';
+        if (/^<(?:pre|ul|ol|h\d)/.test(p)) return p;
+        return '<p>' + p + '</p>';
+      }).join('');
+    }
+    html = html.replace(/<pre><code><\/code><\/pre>/g, '');
+    return html;
+  }
+
+  function showTyping() {
+    var div = document.createElement('div');
+    div.id = 'ai-typing';
+    div.className = 'msg-row msg-ai';
+    div.appendChild(createAvatar('model'));
+    var inner = document.createElement('div');
+    inner.className = 'msg-bubble ai';
+    inner.innerHTML = '<div class="msg-header">HackIT AI <span class="msg-badge">Beta</span> <span class="msg-time ai">' + msgTime() + '</span></div>';
+    var content = document.createElement('div');
+    content.className = 'msg-content ai flex items-center gap-1.5 py-2 px-3';
+    for (var i = 0; i < 3; i++) {
+      var dot = document.createElement('span');
+      dot.className = 'w-2 h-2 rounded-full bg-[var(--accent)] typing-dot';
+      content.appendChild(dot);
+    }
+    inner.appendChild(content);
+    div.appendChild(inner);
+    messages.appendChild(div);
+    scrollToBottom();
+  }
+
+  function removeTyping() {
+    var el = document.getElementById('ai-typing');
+    if (el) el.remove();
+  }
+
+  function showWelcome() {
+    var row = document.createElement('div');
+    row.className = 'msg-row msg-ai';
+    row.dataset.index = 'welcome';
+    row.appendChild(createAvatar('model'));
+    var bubble = document.createElement('div');
+    bubble.className = 'msg-bubble ai';
+    bubble.innerHTML = '<div class="msg-header">HackIT AI <span class="msg-badge">Beta</span> <span class="msg-time ai">' + msgTime() + '</span></div>';
+    var content = document.createElement('div');
+    content.className = 'msg-content ai';
+    var whtml = renderMarkdown(t.welcome);
+    content.innerHTML = whtml;
+    bubble.appendChild(content);
+    var chipsDiv = document.createElement('div');
+    chipsDiv.className = 'flex flex-wrap gap-1.5 mt-2.5 pt-2.5 border-t border-[var(--border)]';
+    var icons = ['<svg class="w-3 h-3 inline-block mr-1 -mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>','<svg class="w-3 h-3 inline-block mr-1 -mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 16 16 12 12 8"/></svg>','<svg class="w-3 h-3 inline-block mr-1 -mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>','<svg class="w-3 h-3 inline-block mr-1 -mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>'];
+    t.chips.forEach(function(c, i) {
+      var btn = document.createElement('button');
+      btn.className = 'ai-chip text-[11px] px-2.5 py-1 rounded-full border border-[var(--border)] text-[var(--text-secondary)] transition-all duration-200 cursor-pointer';
+      btn.innerHTML = icons[i] + c[1];
+      btn.dataset.prompt = c[0];
+      chipsDiv.appendChild(btn);
+    });
+    bubble.appendChild(chipsDiv);
+    var feedback = document.createElement('div');
+    feedback.className = 'ai-feedback';
+    feedback.innerHTML = '<button class="fb-btn fb-like" title="Like"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg></button><button class="fb-btn fb-dislike" title="Dislike"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3H10zM17 2h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"/></svg></button>';
+    bubble.appendChild(feedback);
+    row.appendChild(bubble);
+    messages.appendChild(row);
+  }
+
+  function setLoading(loading) {
+    sendBtn.disabled = loading;
+    sendBtn.innerHTML = loading
+      ? '<svg class="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" fill="none" stroke-dasharray="31.4 31.4" stroke-linecap="round"/></svg>'
+      : '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>';
+  }
+
+  function formatError(errText) {
+    if (errText.indexOf('API_KEY') !== -1 || errText.indexOf('API key') !== -1) {
+      return 'Invalid API key. Please set a valid <code>PUBLIC_GEMINI_API_KEY</code> in your <code>.env</code> file. Get your key at <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">Google AI Studio</a>.';
+    }
+    if (errText.indexOf('SAFETY') !== -1 || errText.indexOf('safety') !== -1) {
+      return 'I couldn\'t generate a response due to safety filters. Please try rephrasing your question.';
+    }
+    if (errText.indexOf('is not found') !== -1 || errText.indexOf('NOT_FOUND') !== -1) {
+      return '⚠️ **Model not available**\n\nThe Gemini model for this API key is not found. Try a different model or get a new API key at [Google AI Studio](https://aistudio.google.com/apikey).';
+    }
+    if (errText.indexOf('limit: 0') !== -1 || errText.indexOf('RESOURCE_EXHAUSTED') !== -1) {
+      return '⚠️ **Daily free quota exhausted**\n\nThis API key\'s daily limit is used up for this model. The free tier resets at **midnight Pacific time**.\n\nTo fix now:\n1. Get a **new key from a different Google Cloud project** at [Google AI Studio](https://aistudio.google.com/apikey)\n2. Manage existing keys at [Google Cloud Console](https://console.cloud.google.com/apis/credentials)\n3. **Enable billing** on your project for 1,500 free requests/day then pay-as-you-go\n\nOr just **wait** — it\'ll reset automatically.';
+    }
+    if (errText.indexOf('429') !== -1 || errText.indexOf('RATE_LIMIT') !== -1) {
+      return '⚠️ **Rate limit hit** — too many requests per minute. Please wait **30-60 seconds**, then try again.';
+    }
+    if (errText.indexOf('quota') !== -1) {
+      return '⚠️ **API quota exceeded**\n\nGemini free tier daily quota is used up. You can:\n1. Wait until the quota resets (usually daily)\n2. Get a **new key via different Google Cloud project** at [Google AI Studio](https://aistudio.google.com/apikey)\n3. Enable billing on your Google Cloud project for higher limits';
+    }
+    return '⚠️ **Something went wrong**\n\nThe Gemini API returned an error. Check your API key and internet connection, then try again.';
+  }
+
+  async function sendMessage() {
+    var text = input.value.trim();
+    if (!text || isLoading) return;
+    var now = Date.now();
+    if (now - lastRequestTime < MIN_REQUEST_INTERVAL) {
+      var wait = Math.ceil((MIN_REQUEST_INTERVAL - (now - lastRequestTime)) / 1000);
+      addMessage('model', '⏳ Please wait **' + wait + 's** before sending another message (rate limit protection).');
+      isLoading = false;
+      setLoading(false);
+      input.value = text;
+      updateSendBtn();
+      return;
+    }
+    lastRequestTime = now;
+    isLoading = true;
+    input.value = '';
+    input.style.height = 'auto';
+    updateSendBtn();
+    setLoading(true);
+    addMessage('user', text);
+    conversation.push({ role: 'user', parts: [{ text: text }] });
+    showTyping();
+    try {
+      var apiKey = getApiKey();
+      if (!apiKey) {
+        removeTyping();
+        addMessage('model', '⚠️ **API Key not configured**\n\nTo use HackIT AI, set your Gemini API key in the `.env` file:\n\n```\nPUBLIC_GEMINI_API_KEY=your_api_key_here\n```\n\nGet a free key at: https://aistudio.google.com/apikey');
+        setLoading(false);
+        return;
+      }
+      if (apiKey.indexOf('AIza') !== 0 || apiKey.length < 30) {
+        removeTyping();
+        addMessage('model', '⚠️ **Invalid API key format**\n\nThe key in `.env` doesn\'t look valid. Google Gemini keys start with `AIza...` and are ~39 characters.\n\nGet a new key at: https://aistudio.google.com/apikey\n\nAfter updating `.env`, **restart the dev server** or **rebuild** (`npm run build`) for the change to take effect.');
+        setLoading(false);
+        return;
+      }
+      var chatHistory = conversation.map(function(msg) { return { role: msg.role, parts: msg.parts }; });
+      var res = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' + apiKey, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          system_instruction: { parts: [{ text: SYSTEM_PROMPT }] },
+          contents: chatHistory,
+          generationConfig: {
+            temperature: 0.4,
+            maxOutputTokens: 2048,
+            topP: 0.92,
+            topK: 40
+          },
+          safetySettings: [
+            { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_NONE' },
+            { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_NONE' },
+            { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_NONE' },
+            { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' }
+          ]
+        })
+      });
+      removeTyping();
+      if (!res.ok) {
+        var err = await res.text();
+        addMessage('model', formatError(err));
+        setLoading(false);
+        return;
+      }
+      var data = await res.json();
+      var reply = data && data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0] ? data.candidates[0].content.parts[0].text : 'No response generated. Please try rephrasing your question.';
+      addMessage('model', reply);
+      conversation.push({ role: 'model', parts: [{ text: reply }] });
+    } catch (err) {
+      removeTyping();
+      var msg = err.message || '';
+      if (msg.indexOf('fetch') !== -1 || msg.indexOf('network') !== -1) {
+        addMessage('model', '⚠️ **Network Error**\n\nUnable to reach the Gemini API. Please check your internet connection and try again.');
+      } else {
+        addMessage('model', '⚠️ **Unexpected Error**\n\nAn unexpected error occurred: `' + escapeHtml(msg || 'Unknown') + '`\n\nPlease try again.');
+      }
+    } finally {
+      isLoading = false;
+      setLoading(false);
+    }
+  }
+
+  if (toggle) {
+    toggle.addEventListener('click', togglePanel);
+  }
+
+  if (headerClose) {
+    headerClose.addEventListener('click', function(e) {
+      createRipple(e, headerClose);
+      if (isOpen) togglePanel();
+    });
+  }
+
+  if (backdrop) {
+    backdrop.addEventListener('click', function() {
+      if (isOpen) togglePanel();
+    });
+  }
+  sendBtn.addEventListener('click', function(e) { createRipple(e, sendBtn); sendMessage(); });
+  input.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+  });
+  input.addEventListener('input', autoResize);
+
+  // Delegated clicks: chips + copy
+  messages.addEventListener('click', function(e) {
+    var chip = e.target.closest('.ai-chip, .ai-followup');
+    if (chip) {
+      var prompt = chip.dataset.prompt;
+      if (prompt) sendViaChip(prompt);
+      return;
+    }
+    var fb = e.target.closest('.fb-btn');
+    if (fb) {
+      if (fb.classList.contains('permanent')) return;
+      var container = fb.closest('.ai-feedback');
+      if (!container) return;
+      var all = container.querySelectorAll('.fb-btn');
+      all.forEach(function(b) { b.classList.add('permanent'); });
+      fb.classList.add('active');
+      return;
+    }
+    var btn = e.target.closest('.ai-copy-btn');
+    if (!btn) return;
+    var text = btn.getAttribute('data-copy-text');
+    if (!text) return;
+    navigator.clipboard.writeText(text).then(function() {
+      btn.innerHTML = '<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>';
+      btn.classList.add('text-green-500');
+      setTimeout(function() {
+        btn.innerHTML = '<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
+        btn.classList.remove('text-green-500');
+      }, 2000);
+    });
+  });
+
+  if (backdrop) {
+    backdrop.addEventListener('click', function() {
+      if (isOpen) togglePanel();
+    });
+  }
+
+  clearBtn.addEventListener('click', function(e) {
+    createRipple(e, clearBtn);
+    var welcome = messages.querySelector('[data-index="welcome"]');
+    while (messages.lastChild) { messages.removeChild(messages.lastChild); }
+    if (welcome) messages.appendChild(welcome);
+    else showWelcome();
+    conversation = [];
+    input.focus();
+    scrollToBottom();
+  });
+
+  input.placeholder = t.placeholder;
+  var onlineLabel = document.getElementById('ai-online-label');
+  if (onlineLabel) onlineLabel.textContent = t.online;
+  showWelcome();
+  updateSendBtn();
+  togglePanel();
+})();
+</script>

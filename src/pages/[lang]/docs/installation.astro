@@ -1,0 +1,124 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import { translations, type Lang } from "../../../i18n/translations";
+import CodeBlock from "../../../components/CodeBlock.astro";
+import DocSidebar from "../../../components/docs/DocSidebar.astro";
+import DocTOC from "../../../components/docs/DocTOC.astro";
+import DocPagination from "../../../components/docs/DocPagination.astro";
+import DocBreadcrumb from "../../../components/docs/DocBreadcrumb.astro";
+import DocSearch from "../../../components/docs/DocSearch.astro";
+
+export async function getStaticPaths() {
+  return [
+    { params: { lang: "en" } },
+    { params: { lang: "it" } },
+    { params: { lang: "id" } },
+    { params: { lang: "ru" } },
+    { params: { lang: "zh" } },
+    { params: { lang: "ja" } },
+  ];
+}
+
+const { lang } = Astro.params as { lang: Lang };
+const t = translations[lang];
+const d = t.docs.installation;
+const headings = [
+  { id: "clone-install", text: d.h_cloneInstall, level: 2 },
+  { id: "running", text: d.h_running, level: 2 },
+  { id: "deps", text: d.h_deps, level: 2 },
+];
+
+const platformData = [
+  {
+    label: d.linuxLabel,
+    cmd: "\ngit clone https://github.com/dextryayers/HackIT.git\ncd HackIT\npip install -r requirements.txt\npython hackit/main.py --help\n",
+  },
+  {
+    label: d.windowsLabel,
+    cmd: "\ngit clone https://github.com/dextryayers/HackIT.git\ncd HackIT\npip install -r requirements.txt\npython hackit/main.py --help\n",
+  },
+];
+
+const depsList = [
+  { label: d.depPythonLabel, desc: d.depPythonDesc, icon: "python" },
+];
+---
+
+<Layout lang={lang} t={t}>
+  <DocSidebar lang={lang} currentPath={Astro.url.pathname} headings={headings} />
+  <div class="max-w-none lg:ml-96 px-6 lg:px-10 pt-24 lg:pt-28 pb-16 lg:pb-24">
+    <div class="lg:flex lg:gap-0">
+      <main class="flex-1 min-w-0 lg:pl-20 xl:pl-28">
+        <DocBreadcrumb lang={lang} items={[{ label: d.title }]} />
+        <div class="my-6"><DocSearch t={t} lang={lang} /></div>
+        <h1 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold gradient-text">{d.title}</h1>
+        <p class="text-base sm:text-lg text-[var(--text-secondary)] mt-4 mb-10 leading-relaxed">{d.desc}</p>
+
+        <section id="clone-install" class="mb-14 scroll-mt-28">
+          <h2 class="text-xl sm:text-2xl font-bold text-[var(--text)] mb-5 flex items-center gap-3">
+            <span class="w-8 h-8 rounded-lg bg-[var(--accent)]/15 text-[var(--accent)] flex items-center justify-center text-sm font-bold shrink-0">1</span>
+            {d.h_cloneInstall}
+          </h2>
+          <p class="text-sm sm:text-base text-[var(--text-secondary)] mb-6 leading-relaxed">
+            {d.h_cloneDesc}
+          </p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+            {platformData.map((p) => (
+              <div class="code-block-wrapper group relative">
+                <div class="flex items-center justify-between px-4 py-2 bg-[var(--bg-tertiary)] border-b border-[var(--border)] rounded-t-lg">
+                  <span class="text-xs font-mono text-[var(--text-muted)] uppercase tracking-wider">{p.label}</span>
+                  <button class="copy-btn text-xs font-medium text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors opacity-0 group-hover:opacity-100" data-code={p.cmd.trim()}>{t.cli.copy}</button>
+                </div>
+                <pre class="bg-[var(--bg-secondary)] border border-[var(--border)] border-t-0 rounded-b-lg p-4 overflow-x-auto"><code class="text-sm font-mono text-[var(--text)] leading-relaxed whitespace-pre">{p.cmd}</code></pre>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section id="running" class="mb-14 scroll-mt-28">
+          <h2 class="text-xl sm:text-2xl font-bold text-[var(--text)] mb-5 flex items-center gap-3">
+            <span class="w-8 h-8 rounded-lg bg-[var(--accent)]/15 text-[var(--accent)] flex items-center justify-center text-sm font-bold shrink-0">2</span>
+            {d.h_running}
+          </h2>
+          <p class="text-sm sm:text-base text-[var(--text-secondary)] mb-6 leading-relaxed">
+            {d.h_runningDesc1}
+          </p>
+          <CodeBlock code="python hackit/main.py ports scan -p 80,443 --targets example.com" lang="bash" t={t} />
+          <p class="text-sm sm:text-base text-[var(--text-secondary)] mb-6 leading-relaxed">
+            {d.h_runningDesc2}
+          </p>
+          <CodeBlock code="python -m hackit.main web headers --url https://target.com" lang="bash" t={t} />
+          <p class="text-sm sm:text-base text-[var(--text-secondary)] mb-6 leading-relaxed">
+            {d.h_runningDesc3}
+          </p>
+          <CodeBlock code="python hackit/main.py agent" lang="bash" t={t} />
+        </section>
+
+        <section id="deps" class="mb-14 scroll-mt-28">
+          <h2 class="text-xl sm:text-2xl font-bold text-[var(--text)] mb-5 flex items-center gap-3">
+            <span class="w-8 h-8 rounded-lg bg-[var(--accent)]/15 text-[var(--accent)] flex items-center justify-center text-sm font-bold shrink-0">3</span>
+            {d.h_deps}
+          </h2>
+          <p class="text-sm sm:text-base text-[var(--text-secondary)] mb-6 leading-relaxed">
+            {d.h_depsDesc}
+          </p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+            {depsList.map((dep) => (
+              <div class="glow-card p-4 flex items-start gap-3">
+                <div class="w-10 h-10 rounded-lg bg-[var(--bg-tertiary)] border border-[var(--border)] flex items-center justify-center shrink-0">
+                  <span class="text-xs font-bold text-[var(--accent)]">{dep.label.substring(0,2)}</span>
+                </div>
+                <div>
+                  <p class="text-sm font-medium text-[var(--text)]">{dep.label}</p>
+                  <p class="text-xs text-[var(--text-muted)] mt-0.5">{dep.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      </main>
+      <DocTOC headings={headings} />
+    </div>
+    <DocPagination lang={lang} currentPath={Astro.url.pathname} />
+  </div>
+</Layout>

@@ -1,0 +1,127 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import { translations, type Lang } from "../../../i18n/translations";
+import CodeBlock from "../../../components/CodeBlock.astro";
+import DocSidebar from "../../../components/docs/DocSidebar.astro";
+import DocTOC from "../../../components/docs/DocTOC.astro";
+import DocPagination from "../../../components/docs/DocPagination.astro";
+import DocBreadcrumb from "../../../components/docs/DocBreadcrumb.astro";
+import DocSearch from "../../../components/docs/DocSearch.astro";
+
+export async function getStaticPaths() {
+  return [
+    { params: { lang: "en" } },
+    { params: { lang: "it" } },
+    { params: { lang: "id" } },
+    { params: { lang: "ru" } },
+    { params: { lang: "zh" } },
+    { params: { lang: "ja" } },
+  ];
+}
+
+const { lang } = Astro.params as { lang: Lang };
+const t = translations[lang];
+const d = t.docs.cli;
+const headings = [
+  { id: "commands", text: d.h_commands, level: 2 },
+  { id: "help-system", text: d.h_helpSystem, level: 2 }
+];
+
+// page data
+
+// page data
+---
+
+<Layout lang={lang} t={t}>
+  <DocSidebar lang={lang} currentPath={Astro.url.pathname} headings={headings} />
+  <div class="max-w-none lg:ml-96 px-6 lg:px-10 pt-24 lg:pt-28 pb-16 lg:pb-24">
+    <div class="lg:flex lg:gap-0">
+      <main class="flex-1 min-w-0 lg:pl-20 xl:pl-28">
+        <DocBreadcrumb lang={lang} items={[{ label: d.title }]} />
+        <div class="my-6"><DocSearch t={t} lang={lang} /></div>
+        <h1 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold gradient-text" data-reveal>{d.title}</h1>
+        <p class="text-base sm:text-lg text-[var(--text-secondary)] mt-4 mb-10 leading-relaxed" data-reveal data-reveal-delay="0.1">{d.desc}</p>
+
+        <section id="commands" class="mb-14 scroll-mt-28" data-reveal data-reveal-delay="0.2">
+  <h2 class="text-xl sm:text-2xl font-bold text-[var(--text)] mb-5">{d.h_commands}</h2>
+  <p class="text-sm sm:text-base text-[var(--text-secondary)] mb-6 leading-relaxed">
+    The HackIT CLI is defined in <code class="text-[var(--accent)]">hackit/cli.py</code> and uses a modular command structure: <code class="text-[var(--accent)]">hackit &lt;group&gt; &lt;module&gt; [options]</code>. Each module is a self-contained security tool accessible from the command line.
+  </p>
+  <p class="text-sm sm:text-base text-[var(--text-secondary)] mb-6 leading-relaxed">
+    Available modules span reconnaissance, web security, network analysis, exploitation, and auxiliary operations. Below are the primary commands with their typical usage patterns.
+  </p>
+  <CodeBlock code={`# Port scanning
+hackit ports scan -p 80,443 --targets target.com
+
+# Directory discovery
+hackit dirfinder --url https://target.com
+
+# Subdomain enumeration
+hackit recon subdomains -d target.com
+
+# Technology detection
+hackit web tech --url https://target.com
+
+# Web fuzzing
+hackit web fuzz --url https://target.com
+
+# Vulnerability scanning
+hackit vuln xss --url https://target.com
+hackit vuln sqli --url "http://site.com?id=1" --dbs
+hackit ssl check --url https://target.com
+hackit web headers --url https://target.com
+hackit web js --url https://target.com
+hackit vuln redirect --url https://target.com
+hackit util cve --software apache --version 2.4.49
+
+# Parameter discovery
+hackit web params --url https://target.com
+
+# Network scanning
+hackit recon ips --network 192.168.1.0/24
+
+# OSINT
+hackit osint
+hackit recon osint
+
+# Wireless
+hackit wireless
+
+# AI agent
+hackit agent
+
+# Auxiliary
+hackit vuln atomix -u "https://example.com"
+hackit web 403bypass --url https://target.com
+hackit vuln rce -u "http://site.com?cmd=ls" --detect`} lang="bash" />
+</section>
+
+<section id="help-system" class="mb-14 scroll-mt-28" data-reveal data-reveal-delay="0.3">
+  <h2 class="text-xl sm:text-2xl font-bold text-[var(--text)] mb-5">{d.h_helpSystem}</h2>
+  <p class="text-sm sm:text-base text-[var(--text-secondary)] mb-6 leading-relaxed">
+    HackIT provides a layered help system. Use <code class="text-[var(--accent)]">hackit --help</code> or <code class="text-[var(--accent)]">hackit help</code> to view the top-level usage summary and available modules. For module-specific details, append <code class="text-[var(--accent)]">--help</code> to any command: <code class="text-[var(--accent)]">hackit ports --help</code>. A man page is also available via <code class="text-[var(--accent)]">man hackit</code> after installation.
+  </p>
+  <p class="text-sm sm:text-base text-[var(--text-secondary)] mb-6 leading-relaxed">
+    For deeper dives, <code class="text-[var(--accent)]">hackit help &lt;topic&gt;</code> provides comprehensive documentation on specific areas, while <code class="text-[var(--accent)]">hackit examples</code> displays common usage patterns. The help content is fully localized and currently supports <strong>English</strong>, <strong>Italian</strong>, <strong>Indonesian</strong>, <strong>Russian</strong>, <strong>Chinese</strong>, and <strong>Japanese</strong>.
+  </p>
+  <CodeBlock code={`# Top-level help
+hackit --help
+
+# Module-specific help
+hackit ports --help
+
+# Detailed topic help
+hackit help web
+
+# Show usage examples
+hackit examples
+
+# View the man page
+man hackit`} lang="bash" />
+</section>
+</main>
+      <DocTOC headings={headings} />
+    </div>
+    <DocPagination lang={lang} currentPath={Astro.url.pathname} />
+  </div>
+</Layout>

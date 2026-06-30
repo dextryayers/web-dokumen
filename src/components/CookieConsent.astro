@@ -1,0 +1,77 @@
+---
+const { t } = Astro.props;
+const c = t.cookie || { title: "Cookie Consent", desc: "", accept: "Accept", decline: "Decline" };
+---
+
+<div id="cookie-consent" class="fixed bottom-0 left-0 right-0 z-[9999] translate-y-0 opacity-0 transition-all duration-700 ease-out" style="transform:translateY(100%)">
+  <div class="mx-auto max-w-7xl px-3 sm:px-6 lg:px-8 pb-3 sm:pb-6">
+    <div class="relative overflow-hidden rounded-2xl border border-[var(--border)]/80 bg-[var(--card-bg)]/95 shadow-2xl shadow-black/25 backdrop-blur-2xl">
+      <div class="absolute inset-0 bg-gradient-to-br from-[var(--accent)]/[0.04] via-transparent to-purple-500/[0.04] pointer-events-none"></div>
+      <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[var(--accent)]/25 to-transparent"></div>
+
+      <div class="relative px-4 py-4 sm:px-6 sm:py-5 flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-5">
+        <div class="hidden sm:flex w-10 h-10 rounded-xl bg-gradient-to-br from-[var(--accent)]/15 to-purple-600/15 items-center justify-center shrink-0 ring-1 ring-[var(--accent)]/20 shadow-sm">
+          <svg class="w-5 h-5 text-[var(--accent)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5"/>
+            <circle cx="8.5" cy="8.5" r="0.5" fill="currentColor"/>
+            <circle cx="16" cy="15.5" r="0.5" fill="currentColor"/>
+            <circle cx="12" cy="12" r="0.5" fill="currentColor"/>
+            <circle cx="11" cy="17" r="0.5" fill="currentColor"/>
+            <circle cx="7" cy="14" r="0.5" fill="currentColor"/>
+          </svg>
+        </div>
+
+        <div class="flex-1 min-w-0">
+          <p class="text-sm font-semibold text-[var(--text)]">{c.title}</p>
+          <p class="text-xs sm:text-sm text-[var(--text-secondary)] mt-0.5 leading-relaxed">{c.desc}</p>
+        </div>
+
+        <div class="flex items-center gap-2 sm:gap-2.5 w-full sm:w-auto shrink-0 pt-1 sm:pt-0">
+          <button id="cookie-decline" class="flex-1 sm:flex-none px-4 py-2.5 rounded-xl text-xs sm:text-sm font-medium text-[var(--text-secondary)] border border-[var(--border)] bg-[var(--bg-tertiary)]/50 hover:bg-[var(--bg-tertiary)] hover:text-[var(--text)] active:scale-[0.97] transition-all duration-200">
+            {c.decline}
+          </button>
+          <button id="cookie-accept" class="flex-1 sm:flex-none px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold text-white bg-gradient-to-r from-[var(--accent)] to-purple-600 hover:brightness-110 active:scale-[0.97] transition-all duration-200 shadow-lg shadow-[var(--accent)]/20">
+            {c.accept}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  #cookie-consent.show {
+    transform: translateY(0) !important;
+    opacity: 1 !important;
+  }
+  #cookie-consent.hide {
+    transform: translateY(100%) !important;
+    opacity: 0 !important;
+  }
+</style>
+
+<script>
+(function () {
+  var el = document.getElementById('cookie-consent');
+  if (!el) return;
+
+  if (localStorage.getItem('hackit-cookie-consent')) {
+    el.remove();
+    return;
+  }
+
+  requestAnimationFrame(function () {
+    el.classList.add('show');
+  });
+
+  function dismiss() {
+    el.classList.remove('show');
+    el.classList.add('hide');
+    localStorage.setItem('hackit-cookie-consent', '1');
+    setTimeout(function () { if (el.parentNode) el.remove(); }, 700);
+  }
+
+  document.getElementById('cookie-accept')?.addEventListener('click', dismiss);
+  document.getElementById('cookie-decline')?.addEventListener('click', dismiss);
+})();
+</script>

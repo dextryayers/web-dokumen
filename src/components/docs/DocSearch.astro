@@ -1,0 +1,130 @@
+---
+const { t, lang } = Astro.props as { t: any; lang: string };
+const d = t.docs;
+const pages = [
+  { title: d.docsIndex.title, href: "/" + lang + "/docs/", desc: d.docsIndex.desc },
+  { title: d.gettingStarted.title, href: "/" + lang + "/docs/getting-started/", desc: d.gettingStarted.desc },
+  { title: d.installation.title, href: "/" + lang + "/docs/installation/", desc: d.installation.desc },
+  { title: d.architecture.title, href: "/" + lang + "/docs/architecture/", desc: d.architecture.desc },
+  { title: d.configuration.title, href: "/" + lang + "/docs/configuration/", desc: d.configuration.desc },
+  { title: d.guide.title, href: "/" + lang + "/docs/guide/", desc: d.guide.desc },
+  { title: d.cli.title, href: "/" + lang + "/docs/cli/", desc: d.cli.desc },
+  { title: d.modules.title, href: "/" + lang + "/docs/modules/", desc: d.modules.desc },
+  { title: d.aiAgents.title, href: "/" + lang + "/docs/ai-agents/", desc: d.aiAgents.desc },
+  { title: d.osint.title, href: "/" + lang + "/docs/osint/", desc: d.osint.desc },
+  { title: d.webFuzzing.title, href: "/" + lang + "/docs/web-fuzzing/", desc: d.webFuzzing.desc },
+  { title: d.wireless.title, href: "/" + lang + "/docs/wireless/", desc: d.wireless.desc },
+  { title: d.reporting.title, href: "/" + lang + "/docs/reporting/", desc: d.reporting.desc },
+  { title: d.reference.title, href: "/" + lang + "/docs/reference/", desc: d.reference.desc },
+  { title: d.faq.title, href: "/" + lang + "/docs/faq/", desc: d.faq.desc },
+  { title: d.portScan.title, href: "/" + lang + "/docs/port-scan/", desc: d.portScan.desc },
+  { title: d.dirFinder.title, href: "/" + lang + "/docs/dir-finder/", desc: d.dirFinder.desc },
+  { title: d.headerAudit.title, href: "/" + lang + "/docs/header-audit/", desc: d.headerAudit.desc },
+  { title: d.techDetection.title, href: "/" + lang + "/docs/tech-detection/", desc: d.techDetection.desc },
+  { title: d.webFuzzer.title, href: "/" + lang + "/docs/web-fuzzer/", desc: d.webFuzzer.desc },
+  { title: d.jsAnalysis.title, href: "/" + lang + "/docs/js-analysis/", desc: d.jsAnalysis.desc },
+  { title: d.params.title, href: "/" + lang + "/docs/params/", desc: d.params.desc },
+  { title: d.bypass403.title, href: "/" + lang + "/docs/403bypass/", desc: d.bypass403.desc },
+  { title: d.subdomain.title, href: "/" + lang + "/docs/subdomain/", desc: d.subdomain.desc },
+  { title: d.networkScan.title, href: "/" + lang + "/docs/network-scan/", desc: d.networkScan.desc },
+  { title: d.ssl.title, href: "/" + lang + "/docs/ssl/", desc: d.ssl.desc },
+  { title: d.cve.title, href: "/" + lang + "/docs/cve/", desc: d.cve.desc },
+  { title: d.xss.title, href: "/" + lang + "/docs/xss/", desc: d.xss.desc },
+  { title: d.sqli.title, href: "/" + lang + "/docs/sqli/", desc: d.sqli.desc },
+  { title: d.redirect.title, href: "/" + lang + "/docs/redirect/", desc: d.redirect.desc },
+  { title: d.rce.title, href: "/" + lang + "/docs/rce/", desc: d.rce.desc },
+  { title: d.atomix.title, href: "/" + lang + "/docs/atomix/", desc: d.atomix.desc },
+  { title: d.webui.title, href: "/" + lang + "/docs/webui/", desc: d.webui.desc },
+  { title: d.socialEngineering.title, href: "/" + lang + "/docs/social-engineering/", desc: d.socialEngineering.desc },
+  { title: d.nseScripts.title, href: "/" + lang + "/docs/nse-scripts/", desc: d.nseScripts.desc },
+];
+---
+
+<div class="relative">
+  <button id="doc-search-btn" class="flex items-center gap-3 w-full px-4 py-2.5 rounded-xl border border-[var(--border)] bg-[var(--bg-secondary)] text-sm text-[var(--text-muted)] hover:border-[var(--accent)]/30 hover:text-[var(--text-secondary)] transition-all duration-200">
+    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <span class="flex-1 text-left">{t?.nav?.search || "Search docs..."}</span>
+    <kbd class="hidden sm:inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-mono bg-[var(--bg-tertiary)] border border-[var(--border)] text-[var(--text-muted)]">Ctrl+K</kbd>
+  </button>
+</div>
+
+<div id="doc-search-overlay" class="fixed inset-0 z-50 hidden">
+  <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" id="doc-search-backdrop"></div>
+  <div class="absolute top-[20%] left-1/2 -translate-x-1/2 w-full max-w-xl px-4">
+    <div class="rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] shadow-2xl overflow-hidden" style="box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);">
+      <div class="flex items-center gap-3 px-4 py-3 border-b border-[var(--border)]">
+        <svg class="w-4 h-4 text-[var(--text-muted)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input id="doc-search-input" type="text" placeholder={t?.nav?.search || "Search docs..."} class="flex-1 bg-transparent border-none outline-none text-sm text-[var(--text)] placeholder:text-[var(--text-muted)]" autofocus />
+        <button id="doc-search-close" class="text-xs text-[var(--text-muted)] hover:text-[var(--text)] px-2 py-1 rounded-lg hover:bg-[var(--bg-tertiary)] transition-colors">Esc</button>
+      </div>
+      <div id="doc-search-results" class="max-h-80 overflow-y-auto p-2">
+        {pages.map((p, i) => (
+          <a
+            href={p.href}
+            class="search-result-item flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-[var(--accent)]/5 transition-colors cursor-pointer"
+            data-index={i}
+          >
+            <svg class="w-4 h-4 text-[var(--text-muted)] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            <div>
+              <div class="text-sm font-medium text-[var(--text)]">{p.title}</div>
+              <div class="text-xs text-[var(--text-muted)]">{p.desc}</div>
+            </div>
+          </a>
+        ))}
+      </div>
+      <div class="px-4 py-2 border-t border-[var(--border)] flex items-center gap-4 text-[10px] text-[var(--text-muted)]">
+        <span class="flex items-center gap-1"><kbd class="px-1 py-0.5 rounded bg-[var(--bg-tertiary)] border border-[var(--border)] font-mono">&#9166;</kbd> Select</span>
+        <span class="flex items-center gap-1"><kbd class="px-1 py-0.5 rounded bg-[var(--bg-tertiary)] border border-[var(--border)] font-mono">&uarr;</kbd> <kbd class="px-1 py-0.5 rounded bg-[var(--bg-tertiary)] border border-[var(--border)] font-mono">&darr;</kbd> Navigate</span>
+        <span class="flex items-center gap-1"><kbd class="px-1 py-0.5 rounded bg-[var(--bg-tertiary)] border border-[var(--border)] font-mono">Esc</kbd> Close</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+try {
+(function () {
+  var btn = document.getElementById('doc-search-btn');
+  var overlay = document.getElementById('doc-search-overlay');
+  var backdrop = document.getElementById('doc-search-backdrop');
+  var closeBtn = document.getElementById('doc-search-close');
+  var input = document.getElementById('doc-search-input');
+  var results = document.getElementById('doc-search-results');
+  if (!btn || !overlay || !results) return;
+
+  function openSearch() {
+    overlay.classList.remove('hidden');
+    setTimeout(function () { if (input) input.focus(); }, 100);
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeSearch() {
+    overlay.classList.add('hidden');
+    if (input) input.value = '';
+    document.body.style.overflow = '';
+    var items = results.querySelectorAll('.search-result-item');
+    items.forEach(function (item) { item.style.display = ''; });
+  }
+
+  btn.addEventListener('click', openSearch);
+  if (backdrop) backdrop.addEventListener('click', closeSearch);
+  if (closeBtn) closeBtn.addEventListener('click', closeSearch);
+
+  document.addEventListener('keydown', function (e) {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'k') { e.preventDefault(); openSearch(); }
+    if (e.key === 'Escape') { closeSearch(); }
+  });
+
+  if (input) {
+    input.addEventListener('input', function () {
+      var q = this.value.toLowerCase();
+      var items = results.querySelectorAll('.search-result-item');
+      items.forEach(function (item) {
+        var text = item.textContent.toLowerCase();
+        item.style.display = text.indexOf(q) === -1 ? 'none' : '';
+      });
+    });
+  }
+})();
+} catch (e) { console.error('DocSearch:', e); }
+</script>

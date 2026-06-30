@@ -1,0 +1,182 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import { translations, type Lang } from "../../../i18n/translations";
+import CodeBlock from "../../../components/CodeBlock.astro";
+import DocSidebar from "../../../components/docs/DocSidebar.astro";
+import DocTOC from "../../../components/docs/DocTOC.astro";
+import DocPagination from "../../../components/docs/DocPagination.astro";
+import DocBreadcrumb from "../../../components/docs/DocBreadcrumb.astro";
+import DocSearch from "../../../components/docs/DocSearch.astro";
+
+export async function getStaticPaths() {
+  return [
+    { params: { lang: "en" } },
+    { params: { lang: "it" } },
+    { params: { lang: "id" } },
+    { params: { lang: "ru" } },
+    { params: { lang: "zh" } },
+    { params: { lang: "ja" } },
+  ];
+}
+
+const { lang } = Astro.params as { lang: Lang };
+const t = translations[lang];
+const d = t.docs.modules;
+const headings = [
+  { id: "port-scanner", text: d.h_portScanner, level: 2 },
+  { id: "osint-engine", text: d.h_osintEngine, level: 2 },
+  { id: "web-fuzzer", text: d.h_webFuzzer, level: 2 },
+  { id: "wireless", text: d.h_wireless, level: 2 },
+  { id: "ssl", text: d.h_ssl, level: 2 },
+  { id: "xss", text: d.h_xss, level: 2 },
+  { id: "sqli", text: d.h_sqli, level: 2 },
+  { id: "cve", text: d.h_cve, level: 2 },
+  { id: "agent", text: d.h_agent, level: 2 },
+  { id: "403bypass", text: d.h_403bypass, level: 2 },
+  { id: "network-scanner", text: d.h_networkScanner, level: 2 }
+];
+
+// page data
+
+// page data
+---
+
+<Layout lang={lang} t={t}>
+  <DocSidebar lang={lang} currentPath={Astro.url.pathname} headings={headings} />
+  <div class="max-w-none lg:ml-96 px-6 lg:px-10 pt-24 lg:pt-28 pb-16 lg:pb-24">
+    <div class="lg:flex lg:gap-0">
+      <main class="flex-1 min-w-0 lg:pl-20 xl:pl-28">
+        <DocBreadcrumb lang={lang} items={[{ label: d.title }]} />
+        <div class="my-6"><DocSearch t={t} lang={lang} /></div>
+        <h1 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold gradient-text" data-reveal>{d.title}</h1>
+        <p class="text-base sm:text-lg text-[var(--text-secondary)] mt-4 mb-10 leading-relaxed" data-reveal data-reveal-delay="0.1">{d.desc}</p>
+
+        <section id="port-scanner" class="mb-14 scroll-mt-28" data-reveal data-reveal-delay="0.2">
+  <h2 class="text-xl sm:text-2xl font-bold text-[var(--text)] mb-5">{d.h_portScanner}</h2>
+  <p class="text-sm sm:text-base text-[var(--text-secondary)] mb-6 leading-relaxed">
+    The <strong class="text-[var(--text)]">port_scanner</strong> module performs port scanning against a specified target. It supports TCP and UDP scan types and allows custom port ranges. Built primarily in Python with Go components for high-concurrency throughput, it can scan large address ranges efficiently.
+  </p>
+  <p class="text-sm sm:text-base text-[var(--text-secondary)] mb-6 leading-relaxed">
+    Results are returned as structured JSON, listing open ports, protocols, and response metadata. The module supports both individual hosts and CIDR range targets.
+  </p>
+  <CodeBlock code={`hackit ports scan -p 80,443 --targets target.com`} lang="bash" t={t} />
+</section>
+
+<section id="osint-engine" class="mb-14 scroll-mt-28" data-reveal data-reveal-delay="0.3">
+  <h2 class="text-xl sm:text-2xl font-bold text-[var(--text)] mb-5">{d.h_osintEngine}</h2>
+  <p class="text-sm sm:text-base text-[var(--text-secondary)] mb-6 leading-relaxed">
+    The <strong class="text-[var(--text)]">osint</strong> module centralises open-source intelligence gathering into a single workflow. It supports domain intelligence (WHOIS lookups, DNS records), email intelligence, and username enumeration across public sources.
+  </p>
+  <p class="text-sm sm:text-base text-[var(--text-secondary)] mb-6 leading-relaxed">
+    All results are correlated and presented in a structured format, making it easy to pivot between different intelligence types during an investigation. The module uses Python for orchestration with lightweight Go helpers for parallel lookups.
+  </p>
+  <CodeBlock code={`hackit osint`} lang="bash" t={t} />
+</section>
+
+<section id="web-fuzzer" class="mb-14 scroll-mt-28" data-reveal data-reveal-delay="0.4">
+  <h2 class="text-xl sm:text-2xl font-bold text-[var(--text)] mb-5">{d.h_webFuzzer}</h2>
+  <p class="text-sm sm:text-base text-[var(--text-secondary)] mb-6 leading-relaxed">
+    HackIT provides several web enumeration modules under the <code class="text-[var(--accent)]">web</code> and <code class="text-[var(--accent)]">recon</code> groups. The <strong class="text-[var(--text)]">dir_finder</strong> discovers hidden directories and files on web servers. The <strong class="text-[var(--text)]">recon subdomains</strong> module enumerates subdomains using wordlists and DNS resolution. The <strong class="text-[var(--text)]">web tech</strong> module identifies web technologies, frameworks, and server software in use. The <strong class="text-[var(--text)]">web fuzz</strong> module handles general web application fuzzing including parameter and endpoint discovery.
+  </p>
+  <p class="text-sm sm:text-base text-[var(--text-secondary)] mb-6 leading-relaxed">
+    These modules intelligently filter false positives by analysing response status codes, content lengths, and similarity ratios, producing a clean list of actionable findings.
+  </p>
+  <CodeBlock code={`hackit dirfinder --url https://target.com
+hackit recon subdomains -d target.com
+hackit web tech --url https://target.com
+hackit web fuzz --url https://target.com`} lang="bash" t={t} />
+</section>
+
+<section id="wireless" class="mb-14 scroll-mt-28" data-reveal data-reveal-delay="0.5">
+  <h2 class="text-xl sm:text-2xl font-bold text-[var(--text)] mb-5">{d.h_wireless}</h2>
+  <p class="text-sm sm:text-base text-[var(--text-secondary)] mb-6 leading-relaxed">
+    The <strong class="text-[var(--text)]">wireless</strong> module brings 802.11 security assessment into HackIT's unified interface. It supports monitor-mode scanning, WPA/WPA2 handshake capture, and deauthentication attacks. The module leverages C# components for reliable frame injection on supported adapters.
+  </p>
+  <p class="text-sm sm:text-base text-[var(--text-secondary)] mb-6 leading-relaxed">
+    Whether auditing your own network's security or conducting a professional wireless penetration test, this module provides essential tooling in a single streamlined command set.
+  </p>
+  <CodeBlock code={`hackit wireless`} lang="bash" t={t} />
+</section>
+
+<section id="ssl" class="mb-14 scroll-mt-28" data-reveal data-reveal-delay="0.6">
+  <h2 class="text-xl sm:text-2xl font-bold text-[var(--text)] mb-5">{d.h_ssl}</h2>
+  <p class="text-sm sm:text-base text-[var(--text-secondary)] mb-6 leading-relaxed">
+    The <strong class="text-[var(--text)]">ssl</strong> module performs in-depth analysis of SSL/TLS configurations on web servers. It checks certificate validity, supported cipher suites, protocol versions, and known vulnerabilities. Results help identify weak configurations and expired or misconfigured certificates.
+  </p>
+  <p class="text-sm sm:text-base text-[var(--text-secondary)] mb-6 leading-relaxed">
+    The module is implemented in Python with Rust components for performant TLS handshake analysis across multiple cipher suites simultaneously.
+  </p>
+  <CodeBlock code={`hackit ssl check --url https://target.com`} lang="bash" t={t} />
+</section>
+
+<section id="xss" class="mb-14 scroll-mt-28" data-reveal data-reveal-delay="0.7">
+  <h2 class="text-xl sm:text-2xl font-bold text-[var(--text)] mb-5">{d.h_xss}</h2>
+  <p class="text-sm sm:text-base text-[var(--text-secondary)] mb-6 leading-relaxed">
+    The <strong class="text-[var(--text)]">vuln xss</strong> module automates cross-site scripting vulnerability detection. It injects payloads into input fields, URL parameters, and headers, then analyses responses for reflected or stored XSS indicators. The module supports custom payload lists and configurable context detection.
+  </p>
+  <p class="text-sm sm:text-base text-[var(--text-secondary)] mb-6 leading-relaxed">
+    Built in Python, it integrates with the web fuzzer pipeline to chain with other discovery modules for comprehensive web application testing.
+  </p>
+  <CodeBlock code={`hackit vuln xss --url https://target.com`} lang="bash" t={t} />
+</section>
+
+<section id="sqli" class="mb-14 scroll-mt-28" data-reveal data-reveal-delay="0.8">
+  <h2 class="text-xl sm:text-2xl font-bold text-[var(--text)] mb-5">{d.h_sqli}</h2>
+  <p class="text-sm sm:text-base text-[var(--text-secondary)] mb-6 leading-relaxed">
+    The <strong class="text-[var(--text)]">vuln sqli</strong> module tests web applications for SQL injection vulnerabilities. It automatically detects injectable parameters and attempts to extract database information using time-based, error-based, and boolean-based blind injection techniques.
+  </p>
+  <p class="text-sm sm:text-base text-[var(--text-secondary)] mb-6 leading-relaxed">
+    The module uses a Python-based detection engine with support for multiple database backends including MySQL, PostgreSQL, MSSQL, and SQLite.
+  </p>
+  <CodeBlock code={`hackit vuln sqli --url "http://site.com?id=1" --dbs`} lang="bash" t={t} />
+</section>
+
+<section id="cve" class="mb-14 scroll-mt-28" data-reveal data-reveal-delay="0.9">
+  <h2 class="text-xl sm:text-2xl font-bold text-[var(--text)] mb-5">{d.h_cve}</h2>
+  <p class="text-sm sm:text-base text-[var(--text-secondary)] mb-6 leading-relaxed">
+    The <strong class="text-[var(--text)]">util cve</strong> module looks up known Common Vulnerabilities and Exposures (CVE) entries by software name and version. It correlates service banners, version information, and configuration fingerprints against a local CVE database to identify potentially exploitable vulnerabilities.
+  </p>
+  <p class="text-sm sm:text-base text-[var(--text-secondary)] mb-6 leading-relaxed">
+    The database is periodically updated and can be refreshed using the module's built-in update mechanism. Results are prioritised by severity score and exploitability.
+  </p>
+  <CodeBlock code={`hackit util cve --software apache --version 2.4.49`} lang="bash" t={t} />
+</section>
+
+<section id="agent" class="mb-14 scroll-mt-28" data-reveal data-reveal-delay="1.0">
+  <h2 class="text-xl sm:text-2xl font-bold text-[var(--text)] mb-5">{d.h_agent}</h2>
+  <p class="text-sm sm:text-base text-[var(--text-secondary)] mb-6 leading-relaxed">
+    The <strong class="text-[var(--text)]">agent</strong> module provides an AI-powered analysis assistant. It launches an interactive session where you can query a language model to analyse scan results, explain vulnerabilities, and suggest remediation strategies.
+  </p>
+  <p class="text-sm sm:text-base text-[var(--text-secondary)] mb-6 leading-relaxed">
+    This module is particularly useful for post-scan analysis, allowing security professionals to quickly interpret findings through conversational interaction with the AI backend.
+  </p>
+  <CodeBlock code={`hackit agent`} lang="bash" t={t} />
+</section>
+
+<section id="403bypass" class="mb-14 scroll-mt-28" data-reveal data-reveal-delay="1.1">
+  <h2 class="text-xl sm:text-2xl font-bold text-[var(--text)] mb-5">{d.h_403bypass}</h2>
+  <p class="text-sm sm:text-base text-[var(--text-secondary)] mb-6 leading-relaxed">
+    The <strong class="text-[var(--text)]">web 403bypass</strong> module attempts to bypass HTTP 403 forbidden responses using a variety of techniques. These include header manipulation (X-Forwarded-For, X-Real-IP), HTTP method override, path traversal, and case variation attacks.
+  </p>
+  <p class="text-sm sm:text-base text-[var(--text-secondary)] mb-6 leading-relaxed">
+    The module systematically tests different bypass strategies and reports which techniques successfully gain access to restricted resources. Results help security teams validate access control configurations.
+  </p>
+  <CodeBlock code={`hackit web 403bypass --url https://target.com`} lang="bash" t={t} />
+</section>
+
+<section id="network-scanner" class="mb-14 scroll-mt-28" data-reveal data-reveal-delay="1.2">
+  <h2 class="text-xl sm:text-2xl font-bold text-[var(--text)] mb-5">{d.h_networkScanner}</h2>
+  <p class="text-sm sm:text-base text-[var(--text-secondary)] mb-6 leading-relaxed">
+    The <strong class="text-[var(--text)]">recon ips</strong> module performs comprehensive network reconnaissance across CIDR ranges. It supports ARP discovery, ICMP ping sweeps, and TCP/UDP port scanning using the <code class="text-[var(--accent)]">--network</code> flag.
+  </p>
+  <p class="text-sm sm:text-base text-[var(--text-secondary)] mb-6 leading-relaxed">
+    Go-based components handle the concurrent scanning workload.
+  </p>
+  <CodeBlock code={`hackit recon ips --network 192.168.1.0/24`} lang="bash" t={t} />
+</section>
+</main>
+      <DocTOC headings={headings} />
+    </div>
+    <DocPagination lang={lang} currentPath={Astro.url.pathname} />
+  </div>
+</Layout>

@@ -1,0 +1,131 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import { translations, type Lang } from "../../../i18n/translations";
+import CodeBlock from "../../../components/CodeBlock.astro";
+import DocSidebar from "../../../components/docs/DocSidebar.astro";
+import DocTOC from "../../../components/docs/DocTOC.astro";
+import DocPagination from "../../../components/docs/DocPagination.astro";
+import DocBreadcrumb from "../../../components/docs/DocBreadcrumb.astro";
+import DocSearch from "../../../components/docs/DocSearch.astro";
+
+export async function getStaticPaths() {
+  return [
+    { params: { lang: "en" } },
+    { params: { lang: "it" } },
+    { params: { lang: "id" } },
+    { params: { lang: "ru" } },
+    { params: { lang: "zh" } },
+    { params: { lang: "ja" } },
+  ];
+}
+
+const { lang } = Astro.params as { lang: Lang };
+const t = translations[lang];
+const d = t.docs.faq;
+const headings = [
+  { id: "general", text: d.h_general, level: 2 },
+  { id: "troubleshooting", text: d.h_troubleshooting, level: 2 },
+  { id: "advanced", text: d.h_advanced, level: 2 }
+];
+
+// page data
+
+// page data
+---
+
+<Layout lang={lang} t={t}>
+  <DocSidebar lang={lang} currentPath={Astro.url.pathname} headings={headings} />
+  <div class="max-w-none lg:ml-96 px-6 lg:px-10 pt-24 lg:pt-28 pb-16 lg:pb-24">
+    <div class="lg:flex lg:gap-0">
+      <main class="flex-1 min-w-0 lg:pl-20 xl:pl-28">
+        <DocBreadcrumb lang={lang} items={[{ label: d.title }]} />
+        <div class="my-6"><DocSearch t={t} lang={lang} /></div>
+        <h1 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold gradient-text" data-reveal>{d.title}</h1>
+        <p class="text-base sm:text-lg text-[var(--text-secondary)] mt-4 mb-10 leading-relaxed" data-reveal data-reveal-delay="0.1">{d.desc}</p>
+
+        <section id="general" class="mb-14 scroll-mt-28" data-reveal data-reveal-delay="0.2">
+  <h2 class="text-xl sm:text-2xl font-bold text-[var(--text)] mb-5">{d.h_general}</h2>
+  <div class="mb-6">
+    <h3 class="text-base font-semibold text-[var(--text)] mb-2">{d.items[0].q}</h3>
+    <p class="text-sm text-[var(--text-secondary)] leading-relaxed">{d.items[0].a}</p>
+  </div>
+  <div class="mb-6">
+    <h3 class="text-base font-semibold text-[var(--text)] mb-2">{d.items[1].q}</h3>
+    <p class="text-sm text-[var(--text-secondary)] leading-relaxed">{d.items[1].a}</p>
+  </div>
+  <div class="mb-6">
+    <h3 class="text-base font-semibold text-[var(--text)] mb-2">{d.items[2].q}</h3>
+    <p class="text-sm text-[var(--text-secondary)] leading-relaxed">{d.items[2].a}</p>
+  </div>
+  <div class="mb-6">
+    <h3 class="text-base font-semibold text-[var(--text)] mb-2">{d.items[3].q}</h3>
+    <p class="text-sm text-[var(--text-secondary)] leading-relaxed">{d.items[3].a}</p>
+  </div>
+  <div class="mb-6">
+    <h3 class="text-base font-semibold text-[var(--text)] mb-2">{d.items[4].q}</h3>
+    <p class="text-sm text-[var(--text-secondary)] leading-relaxed">{d.items[4].a}</p>
+  </div>
+  <div class="mb-6">
+    <h3 class="text-base font-semibold text-[var(--text)] mb-2">{d.items[5].q}</h3>
+    <p class="text-sm text-[var(--text-secondary)] leading-relaxed">{d.items[5].a}</p>
+  </div>
+  <div class="mb-6">
+    <h3 class="text-base font-semibold text-[var(--text)] mb-2">{d.items[6].q}</h3>
+    <p class="text-sm text-[var(--text-secondary)] leading-relaxed">{d.items[6].a}</p>
+  </div>
+  <div class="mb-6">
+    <h3 class="text-base font-semibold text-[var(--text)] mb-2">{d.items[7].q}</h3>
+    <p class="text-sm text-[var(--text-secondary)] leading-relaxed">{d.items[7].a}</p>
+  </div>
+</section>
+
+<section id="troubleshooting" class="mb-14 scroll-mt-28" data-reveal data-reveal-delay="0.3">
+  <h2 class="text-xl sm:text-2xl font-bold text-[var(--text)] mb-5">{d.h_troubleshooting}</h2>
+  <div class="mb-6">
+    <h3 class="text-base font-semibold text-[var(--text)] mb-2">{d.items[8].q}</h3>
+    <p class="text-sm text-[var(--text-secondary)] leading-relaxed">{d.items[8].a}</p>
+  </div>
+  <div class="mb-6">
+    <h3 class="text-base font-semibold text-[var(--text)] mb-2">{d.items[9].q}</h3>
+    <p class="text-sm text-[var(--text-secondary)] leading-relaxed">{d.items[9].a}</p>
+  </div>
+  <div class="mb-6">
+    <h3 class="text-base font-semibold text-[var(--text)] mb-2">{d.items[10].q}</h3>
+    <p class="text-sm text-[var(--text-secondary)] leading-relaxed">{d.items[10].a}</p>
+  </div>
+  <div class="mb-6">
+    <h3 class="text-base font-semibold text-[var(--text)] mb-2">{d.items[11].q}</h3>
+    <p class="text-sm text-[var(--text-secondary)] leading-relaxed">{d.items[11].a}</p>
+  </div>
+  <div class="mb-6">
+    <h3 class="text-base font-semibold text-[var(--text)] mb-2">{d.items[12].q}</h3>
+    <p class="text-sm text-[var(--text-secondary)] leading-relaxed">{d.items[12].a}</p>
+  </div>
+</section>
+
+<section id="advanced" class="mb-14 scroll-mt-28" data-reveal data-reveal-delay="0.4">
+  <h2 class="text-xl sm:text-2xl font-bold text-[var(--text)] mb-5">{d.h_advanced}</h2>
+  <div class="mb-6">
+    <h3 class="text-base font-semibold text-[var(--text)] mb-2">{d.items[13].q}</h3>
+    <p class="text-sm text-[var(--text-secondary)] leading-relaxed">{d.items[13].a}</p>
+  </div>
+  <div class="mb-6">
+    <h3 class="text-base font-semibold text-[var(--text)] mb-2">{d.items[14].q}</h3>
+    <p class="text-sm text-[var(--text-secondary)] leading-relaxed">{d.items[14].a}</p>
+  </div>
+  <div class="mb-6">
+    <h3 class="text-base font-semibold text-[var(--text)] mb-2">{d.items[15].q}</h3>
+    <p class="text-sm text-[var(--text-secondary)] leading-relaxed">{d.items[15].a}</p>
+  </div>
+  <div class="mb-6">
+    <h3 class="text-base font-semibold text-[var(--text)] mb-2">{d.items[16].q}</h3>
+    <p class="text-sm text-[var(--text-secondary)] leading-relaxed">{d.items[16].a}</p>
+  </div>
+</section>
+</main>
+      <DocTOC headings={headings} />
+    </div>
+    <DocPagination lang={lang} currentPath={Astro.url.pathname} />
+  </div>
+</Layout>
+

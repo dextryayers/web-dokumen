@@ -1,0 +1,90 @@
+---
+const { t } = Astro.props;
+
+const commands = [
+  { cmd: "hackit ports scan -p 1-10000 target.com --threads 200", label: "Port Scanning" },
+  { cmd: "hackit vuln xss --url https://target.com/page?id=1", label: "XSS Detection" },
+  { cmd: "hackit vuln sqli --url https://target.com --param id", label: "SQL Injection" },
+  { cmd: "hackit recon subdomains -d target.com --passive-only", label: "Subdomain Enum" },
+  { cmd: "hackit agent \"What are the CVEs for WordPress 6.0?\"", label: "AI Agent Query" },
+  { cmd: "hackit dirfinder --url https://target.com --wordlist common.txt", label: "Directory Fuzzing" },
+  { cmd: "hackit ssl check --host target.com --port 443", label: "SSL Audit" },
+  { cmd: "hackit web tech --url https://target.com", label: "Tech Stack Detection" },
+];
+---
+
+<section class="relative py-24 px-4 overflow-hidden">
+  <div class="absolute inset-0 bg-[var(--bg-secondary)] border-y border-[var(--border)] pointer-events-none"></div>
+  <div class="max-w-6xl mx-auto relative z-10">
+    <div class="text-center mb-14">
+      <span class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-amber-500/20 bg-amber-500/5 text-xs font-semibold text-amber-400 mb-4">Terminal</span>
+      <h2 class="section-title mb-4">{t.cli.title}</h2>
+      <p class="text-[var(--text-secondary)] max-w-lg mx-auto text-sm">{t.cli.desc}</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-5 gap-8 items-start">
+      <div class="lg:col-span-2 rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] shadow-xl overflow-hidden">
+        <div class="flex items-center gap-2 px-4 py-3 border-b border-[var(--border)] bg-[var(--bg-tertiary)]">
+          <span class="w-3 h-3 rounded-full bg-red-500/80"></span>
+          <span class="w-3 h-3 rounded-full bg-yellow-500/80"></span>
+          <span class="w-3 h-3 rounded-full bg-green-500/80"></span>
+          <span class="text-xs text-[var(--text-muted)] ml-2 font-mono">hackit - interactive shell</span>
+        </div>
+        <div class="p-4 sm:p-6 space-y-1 font-mono text-sm">
+          {commands.map((c, i) => (
+            <div class="group relative flex items-start gap-3 rounded-lg p-2.5 hover:bg-[var(--bg-tertiary)] transition-colors duration-200 reveal-cli" data-reveal>
+              <span class="text-[var(--accent)] shrink-0 mt-0.5 select-none font-bold">$</span>
+              <div class="flex-1 min-w-0">
+                <div class="text-[11px] text-[var(--text-muted)] mb-0.5 font-sans">{c.label}</div>
+                <code class="text-[var(--text)] break-all text-[13px] leading-relaxed block">{c.cmd}</code>
+              </div>
+              <button
+                class="copy-btn shrink-0 mt-1.5 px-2.5 py-1 rounded-md text-[11px] font-medium border border-[var(--border)] text-[var(--text-muted)] hover:text-[var(--accent)] hover:border-[var(--accent)]/30 opacity-0 group-hover:opacity-100 transition-all duration-200"
+                data-cmd={c.cmd}
+              >{t.cli.copy}</button>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div class="lg:col-span-3 sticky top-24 reveal-demo" data-reveal>
+        <div class="demo-glow rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] shadow-xl overflow-hidden">
+          <div class="flex items-center gap-2 px-4 py-3 border-b border-[var(--border)] bg-[var(--bg-tertiary)]">
+            <span class="w-3 h-3 rounded-full bg-red-500/80"></span>
+            <span class="w-3 h-3 rounded-full bg-yellow-500/80"></span>
+            <span class="w-3 h-3 rounded-full bg-green-500/80"></span>
+            <span class="text-xs text-[var(--text-muted)] ml-2 font-mono">demo - hackit in action</span>
+          </div>
+          <div class="p-3">
+            <img
+              src="/img/demo.gif"
+              alt="HackIT Demo"
+              class="w-full rounded-xl"
+              loading="lazy"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+(function () {
+  document.querySelectorAll('.copy-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var cmd = btn.dataset.cmd;
+      if (!cmd) return;
+      navigator.clipboard.writeText(cmd).then(function () {
+        var orig = btn.textContent;
+        btn.textContent = 'Copied!';
+        btn.classList.add('text-emerald-400', 'border-emerald-500/40');
+        setTimeout(function () {
+          btn.textContent = orig;
+          btn.classList.remove('text-emerald-400', 'border-emerald-500/40');
+        }, 1500);
+      });
+    });
+  });
+})();
+</script>

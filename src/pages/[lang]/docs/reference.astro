@@ -1,0 +1,139 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import { translations, type Lang } from "../../../i18n/translations";
+import CodeBlock from "../../../components/CodeBlock.astro";
+import DocSidebar from "../../../components/docs/DocSidebar.astro";
+import DocTOC from "../../../components/docs/DocTOC.astro";
+import DocPagination from "../../../components/docs/DocPagination.astro";
+import DocBreadcrumb from "../../../components/docs/DocBreadcrumb.astro";
+import DocSearch from "../../../components/docs/DocSearch.astro";
+
+export async function getStaticPaths() {
+  return [
+    { params: { lang: "en" } },
+    { params: { lang: "it" } },
+    { params: { lang: "id" } },
+    { params: { lang: "ru" } },
+    { params: { lang: "zh" } },
+    { params: { lang: "ja" } },
+  ];
+}
+
+const { lang } = Astro.params as { lang: Lang };
+const t = translations[lang];
+const d = t.docs.reference;
+const headings = [
+  { id: "cli-ref", text: d.h_cliRef, level: 2 },
+  { id: "config-ref", text: d.h_configRef, level: 2 }
+];
+
+// page data
+
+// page data
+---
+
+<Layout lang={lang} t={t}>
+  <DocSidebar lang={lang} currentPath={Astro.url.pathname} headings={headings} />
+  <div class="max-w-none lg:ml-96 px-6 lg:px-10 pt-24 lg:pt-28 pb-16 lg:pb-24">
+    <div class="lg:flex lg:gap-0">
+      <main class="flex-1 min-w-0 lg:pl-20 xl:pl-28">
+        <DocBreadcrumb lang={lang} items={[{ label: d.title }]} />
+        <div class="my-6"><DocSearch t={t} lang={lang} /></div>
+        <h1 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold gradient-text" data-reveal>{d.title}</h1>
+        <p class="text-base sm:text-lg text-[var(--text-secondary)] mt-4 mb-10 leading-relaxed" data-reveal data-reveal-delay="0.1">{d.desc}</p>
+
+        <section id="cli-ref" class="mb-14 scroll-mt-28" data-reveal data-reveal-delay="0.2">
+  <h2 class="text-xl sm:text-2xl font-bold text-[var(--text)] mb-5">{d.h_cliRef}</h2>
+  <p class="text-sm sm:text-base text-[var(--text-secondary)] mb-6 leading-relaxed">
+    HackIT uses a modular CLI structure with the usage pattern: <code class="text-[var(--accent)]">hackit &lt;group&gt; &lt;module&gt; [options]</code>. The CLI is Python-based, invoked via <code class="text-[var(--accent)]">python hackit/main.py [command]</code> or through a shell alias after installation.
+  </p>
+  <p class="text-sm sm:text-base text-[var(--text-secondary)] mb-6 leading-relaxed">
+    Available commands are organized under groups including <code class="text-[var(--accent)]">ports</code> (port scanning), <code class="text-[var(--accent)]">dirfinder</code> (directory enumeration), <code class="text-[var(--accent)]">recon</code> (subdomains, ips, osint), <code class="text-[var(--accent)]">web</code> (tech, fuzz, headers, js, params, 403bypass), <code class="text-[var(--accent)]">vuln</code> (xss, sqli, redirect, rce, atomix), <code class="text-[var(--accent)]">ssl</code> (check), <code class="text-[var(--accent)]">util</code> (cve), <code class="text-[var(--accent)]">agent</code> (AI assistant), <code class="text-[var(--accent)]">osint</code> (OSINT gathering), <code class="text-[var(--accent)]">wireless</code> (Wi-Fi scanning), <code class="text-[var(--accent)]">config</code> (theme settings), <code class="text-[var(--accent)]">run</code> (launch Web UI), and <code class="text-[var(--accent)]">whoami</code> / <code class="text-[var(--accent)]">banner</code> / <code class="text-[var(--accent)]">examples</code> (utility commands).
+  </p>
+  <CodeBlock code={`# Port scanning
+hackit ports scan -p 80,443 --targets target.com
+
+# Directory fuzzing
+hackit dirfinder --url https://target.com
+
+# Subdomain enumeration
+hackit recon subdomains -d target.com
+
+# Technology detection
+hackit web tech --url https://target.com
+
+# Web fuzzing
+hackit web fuzz --url https://target.com
+
+# XSS detection
+hackit vuln xss --url https://target.com
+
+# SQL injection testing
+hackit vuln sqli --url "http://site.com?id=1" --dbs
+
+# SSL/TLS check
+hackit ssl check --url https://target.com
+
+# HTTP header analysis
+hackit web headers --url https://target.com
+
+# JavaScript analysis
+hackit web js --url https://target.com
+
+# Open redirect detection
+hackit vuln redirect --url https://target.com
+
+# CVE lookup
+hackit util cve --software apache --version 2.4.49
+
+# Parameter discovery
+hackit web params --url https://target.com
+
+# Network scan
+hackit recon ips --network 192.168.1.0/24
+
+# AI agent (interactive)
+hackit agent
+
+# OSINT gathering (interactive)
+hackit osint
+
+# Wireless scanning (interactive)
+hackit wireless
+
+# 403 bypass
+hackit web 403bypass --url https://target.com
+
+# RCE detection
+hackit vuln rce -u "http://site.com?cmd=ls" --detect
+
+# Configuration
+hackit config --theme kali
+
+# Launch Web UI
+hackit run`} lang="bash" />
+</section>
+
+<section id="config-ref" class="mb-14 scroll-mt-28" data-reveal data-reveal-delay="0.3">
+  <h2 class="text-xl sm:text-2xl font-bold text-[var(--text)] mb-5">{d.h_configRef}</h2>
+  <p class="text-sm sm:text-base text-[var(--text-secondary)] mb-6 leading-relaxed">
+    HackIT configuration uses a <strong>JSON-based</strong> file located at <code class="text-[var(--accent)]">hackit/config.json</code> or in the <code class="text-[var(--accent)]">hackit/config/</code> directory. The configuration contains global settings for the application rather than per-module sections.
+  </p>
+  <p class="text-sm sm:text-base text-[var(--text-secondary)] mb-6 leading-relaxed">
+    Key configuration options include API keys for the AI agent, default scan parameters, and output preferences. There are no per-module configuration sections — settings are applied globally across all modules.
+  </p>
+  <CodeBlock code={`{
+  "api_key": "sk-...",
+  "model": "gpt-4",
+  "output_dir": "./results",
+  "verbose": false,
+  "timeout": 30,
+  "threads": 10
+}`} lang="json" />
+</section>
+</main>
+      <DocTOC headings={headings} />
+    </div>
+    <DocPagination lang={lang} currentPath={Astro.url.pathname} />
+  </div>
+</Layout>

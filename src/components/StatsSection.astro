@@ -1,0 +1,67 @@
+---
+const { t } = Astro.props;
+
+const stats = [
+  { value: "7", suffix: "+", label: t.stats.languages, color: "text-[var(--accent)]", icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>' },
+  { value: "50", suffix: "+", label: t.stats.modules, color: "text-purple-400", icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>' },
+  { value: "100", suffix: "+", label: t.stats.osintSources, color: "text-cyan-400", icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>' },
+  { value: "30", suffix: "+", label: t.stats.engines, color: "text-emerald-400", icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>' },
+  { value: "35", suffix: "+", label: t.stats.commits, color: "text-amber-400", icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>' },
+];
+---
+
+<section class="relative py-16 px-4">
+  <div class="absolute inset-0 bg-gradient-to-b from-[var(--bg-secondary)] via-transparent to-[var(--bg-secondary)] pointer-events-none"></div>
+  <div class="max-w-6xl mx-auto relative z-10">
+    <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+      {stats.map((s, i) => (
+        <div class="group relative reveal-stat" data-reveal data-delay={i * 0.08}>
+          <div class="absolute -inset-0.5 bg-gradient-to-br from-current/20 to-current/5 rounded-2xl opacity-0 group-hover:opacity-100 blur-sm transition-opacity duration-500" style="color:var(--accent)"></div>
+          <div class="relative p-5 sm:p-6 text-center rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] group-hover:border-[var(--accent)]/30 group-hover:shadow-lg group-hover:shadow-[var(--accent-glow)] transition-all duration-300">
+            <div class={`w-10 h-10 rounded-xl flex items-center justify-center mx-auto mb-3 ${s.color} bg-[var(--bg-tertiary)] border border-[var(--border)] group-hover:bg-current/10 group-hover:border-current/30 transition-all duration-300`} set:html={s.icon}></div>
+            <div class={`text-2xl sm:text-3xl font-extrabold ${s.color} feature-number`}>
+              <span class="stat-value" data-target={s.value}>0</span>
+              <span>{s.suffix}</span>
+            </div>
+            <div class="text-xs sm:text-sm text-[var(--text-muted)] font-medium mt-1">{s.label}</div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<script>
+
+try {
+
+(function () {
+  var rm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (rm) return;
+  var counted = {};
+  var o2 = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting && !counted[entry.target.dataset.id]) {
+        var spans = entry.target.querySelectorAll('.stat-value');
+        spans.forEach(function (span) {
+          var target = parseInt(span.dataset.target) || 0;
+          var current = 0;
+          var step = Math.max(1, Math.floor(target / 40));
+          var interval = setInterval(function () {
+            current += step;
+            if (current >= target) { current = target; clearInterval(interval); }
+            span.textContent = current;
+          }, 40);
+        });
+        counted[entry.target.dataset.id] = true;
+        o2.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.3 });
+  document.querySelectorAll('.stat-value').forEach(function (el, i) {
+    var parent = el.closest('.reveal-stat');
+    if (parent) { parent.dataset.id = parent.dataset.id || ('stat-' + i); o2.observe(parent); }
+  });
+})();
+} catch(e) { console.error('StatsSection:', e); }
+</script>

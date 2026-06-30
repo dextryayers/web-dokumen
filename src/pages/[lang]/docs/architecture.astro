@@ -1,0 +1,86 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import { translations, type Lang } from "../../../i18n/translations";
+import CodeBlock from "../../../components/CodeBlock.astro";
+import DocSidebar from "../../../components/docs/DocSidebar.astro";
+import DocTOC from "../../../components/docs/DocTOC.astro";
+import DocPagination from "../../../components/docs/DocPagination.astro";
+import DocBreadcrumb from "../../../components/docs/DocBreadcrumb.astro";
+import DocSearch from "../../../components/docs/DocSearch.astro";
+
+export async function getStaticPaths() {
+  return [
+    { params: { lang: "en" } },
+    { params: { lang: "it" } },
+    { params: { lang: "id" } },
+    { params: { lang: "ru" } },
+    { params: { lang: "zh" } },
+    { params: { lang: "ja" } },
+  ];
+}
+
+const { lang } = Astro.params as { lang: Lang };
+const t = translations[lang];
+const d = t.docs.architecture;
+const headings = [
+  { id: "polyglot-architecture", text: d.h_polyglotArchitecture, level: 2 },
+  { id: "module-system", text: d.h_moduleSystem, level: 2 },
+  { id: "extensibility", text: d.h_extensibility, level: 2 }
+];
+
+// page data
+
+// page data
+---
+
+<Layout lang={lang} t={t}>
+  <DocSidebar lang={lang} currentPath={Astro.url.pathname} headings={headings} />
+  <div class="max-w-none lg:ml-96 px-6 lg:px-10 pt-24 lg:pt-28 pb-16 lg:pb-24">
+    <div class="lg:flex lg:gap-0">
+      <main class="flex-1 min-w-0 lg:pl-20 xl:pl-28">
+        <DocBreadcrumb lang={lang} items={[{ label: d.title }]} />
+        <div class="my-6"><DocSearch t={t} lang={lang} /></div>
+        <h1 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold gradient-text" data-reveal>{d.title}</h1>
+        <p class="text-base sm:text-lg text-[var(--text-secondary)] mt-4 mb-10 leading-relaxed" data-reveal data-reveal-delay="0.1">{d.desc}</p>
+
+        <section id="polyglot-architecture" class="mb-14 scroll-mt-28" data-reveal data-reveal-delay="0.2">
+  <h2 class="text-xl sm:text-2xl font-bold text-[var(--text)] mb-5">{d.h_polyglotArchitecture}</h2>
+  <p class="text-sm sm:text-base text-[var(--text-secondary)] mb-6 leading-relaxed">
+    HackIT is built on a polyglot architecture where each language serves the domain it is best suited for. <strong class="text-[var(--text)]">Python</strong> is the primary language, handling CLI orchestration, plugin loading, and the majority of security modules. <strong class="text-[var(--text)]">Go</strong> is used for high-concurrency tasks such as network scanning and subdomain discovery where goroutines provide a significant throughput advantage.
+  </p>
+  <p class="text-sm sm:text-base text-[var(--text-secondary)] mb-6 leading-relaxed">
+    <strong class="text-[var(--text)]">Rust</strong> is reserved for performance-critical scanning components that require memory safety without garbage collection overhead. <strong class="text-[var(--text)]">C/C++</strong> provides low-level networking capabilities and raw socket manipulation for specialized modules. <strong class="text-[var(--text)]">C#</strong> handles wireless 802.11 frame injection and monitoring on Windows platforms. <strong class="text-[var(--text)]">Lua</strong> is used for NSE-style scripting within the NSE module, offering a lightweight extension mechanism. <strong class="text-[var(--text)]">Ruby</strong> powers certain auxiliary tools and legacy exploit integrations.
+  </p>
+  <p class="text-sm sm:text-base text-[var(--text-secondary)] mb-6 leading-relaxed">
+    Components communicate through a pipeline bus that passes structured JSON payloads between modules, regardless of the language they are implemented in. This allows each module to be developed independently in the most appropriate language while maintaining seamless interoperability within the framework.
+  </p>
+</section>
+
+<section id="module-system" class="mb-14 scroll-mt-28" data-reveal data-reveal-delay="0.3">
+  <h2 class="text-xl sm:text-2xl font-bold text-[var(--text)] mb-5">{d.h_moduleSystem}</h2>
+  <p class="text-sm sm:text-base text-[var(--text-secondary)] mb-6 leading-relaxed">
+    HackIT ships with over twenty modules covering the full penetration testing lifecycle. These include: <strong class="text-[var(--text)]">port_scanner</strong> for multi-protocol port scanning, <strong class="text-[var(--text)]">dir_finder</strong> for directory enumeration, <strong class="text-[var(--text)]">recon</strong> (subdomains, ips, osint) for reconnaissance, <strong class="text-[var(--text)]">web</strong> (tech, fuzz, headers, js, params, 403bypass) for web security testing, <strong class="text-[var(--text)]">vuln</strong> (xss, sqli, redirect, rce, atomix) for vulnerability detection, <strong class="text-[var(--text)]">ssl</strong> for SSL/TLS certificate analysis, <strong class="text-[var(--text)]">util</strong> (cve) for CVE lookup, <strong class="text-[var(--text)]">agent</strong> for AI-powered analysis, <strong class="text-[var(--text)]">osint</strong> for open-source intelligence, <strong class="text-[var(--text)]">wireless</strong> for wireless auditing, <strong class="text-[var(--text)]">sosialengineer</strong> for social engineering tooling, <strong class="text-[var(--text)]">config</strong> for theme configuration, and a <strong class="text-[var(--text)]">webUI</strong> for graphical interface access via <code class="text-[var(--accent)]">hackit run</code>. detection, <strong class="text-[var(--text)]">sqli</strong> for SQL injection testing, <strong class="text-[var(--text)]">ssl_tool</strong> for SSL/TLS certificate analysis, <strong class="text-[var(--text)]">header_audit</strong> for HTTP security header auditing, <strong class="text-[var(--text)]">js</strong> for JavaScript analysis, <strong class="text-[var(--text)]">redirect</strong> for open redirect detection, <strong class="text-[var(--text)]">cve</strong> for CVE vulnerability scanning, <strong class="text-[var(--text)]">params</strong> for parameter discovery, <strong class="text-[var(--text)]">network_scanner</strong> for network reconnaissance, <strong class="text-[var(--text)]">nse_scripts</strong> for Nmap NSE integration, <strong class="text-[var(--text)]">agent</strong> for AI-powered analysis, <strong class="text-[var(--text)]">osint</strong> for open-source intelligence, <strong class="text-[var(--text)]">wireless</strong> for wireless auditing, <strong class="text-[var(--text)]">atomix</strong> for Atomix operations, <strong class="text-[var(--text)]">sosialengineer</strong> for social engineering tooling, <strong class="text-[var(--text)]">403bypass</strong> for 403 bypass techniques, <strong class="text-[var(--text)]">rce_modul</strong> for remote code execution testing, and a <strong class="text-[var(--text)]">webUI</strong> for graphical interface access.
+  </p>
+  <p class="text-sm sm:text-base text-[var(--text-secondary)] mb-6 leading-relaxed">
+    Each module exposes a consistent CLI interface and produces structured JSON output that feeds into the shared pipeline bus. Modules can be chained together, allowing results from one module to automatically become input for another.
+  </p>
+</section>
+
+<section id="extensibility" class="mb-14 scroll-mt-28" data-reveal data-reveal-delay="0.4">
+  <h2 class="text-xl sm:text-2xl font-bold text-[var(--text)] mb-5">{d.h_extensibility}</h2>
+  <p class="text-sm sm:text-base text-[var(--text-secondary)] mb-6 leading-relaxed">
+    HackIT's extensibility model is built around Python-based plugins. New tools can be added by creating a Python module in the <code class="text-[var(--accent)] text-xs sm:text-sm">hackit/</code> directory and registering it in the CLI entry point. The plugin architecture follows the same conventions as the built-in modules, making it straightforward to contribute custom functionality.
+  </p>
+  <p class="text-sm sm:text-base text-[var(--text-secondary)] mb-6 leading-relaxed">
+    Plugins have access to the full HackIT pipeline, including result publishing, configuration management, and output formatting. This allows third-party developers to extend the framework with new security tools without modifying the core codebase.
+  </p>
+  <p class="text-sm sm:text-base text-[var(--text-secondary)] mb-6 leading-relaxed">
+    The community is encouraged to submit plugins via pull requests to the <a href="https://github.com/dextryayers/HackIT" class="text-[var(--accent)] underline">HackIT GitHub repository</a>. Well-maintained plugins may be promoted to built-in modules in future releases.
+  </p>
+</section>
+</main>
+      <DocTOC headings={headings} />
+    </div>
+    <DocPagination lang={lang} currentPath={Astro.url.pathname} />
+  </div>
+</Layout>

@@ -1,0 +1,119 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import { translations, type Lang } from "../../../i18n/translations";
+import DocSidebar from "../../../components/docs/DocSidebar.astro";
+import DocSearch from "../../../components/docs/DocSearch.astro";
+
+export async function getStaticPaths() {
+  return [
+    { params: { lang: "en" } },
+    { params: { lang: "it" } },
+    { params: { lang: "id" } },
+    { params: { lang: "ru" } },
+    { params: { lang: "zh" } },
+    { params: { lang: "ja" } },
+  ];
+}
+
+const { lang } = Astro.params as { lang: Lang };
+const t = translations[lang];
+const di = t.docs.docsIndex;
+const ss = di.sections;
+---
+
+<Layout lang={lang} t={t}>
+  <DocSidebar lang={lang} currentPath={Astro.url.pathname} headings={[]} />
+  <div class="max-w-none lg:ml-96 px-6 lg:px-10 pt-24 lg:pt-28 pb-16 lg:pb-24">
+    <div class="my-6"><DocSearch t={t} lang={lang} /></div>
+    <h1 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold gradient-text mb-4" data-reveal>{di.title}</h1>
+    <p class="text-base sm:text-lg text-[var(--text-secondary)] mb-12 leading-relaxed" data-reveal data-reveal-delay="0.1">{di.desc}</p>
+
+    <section class="mb-14" data-reveal data-reveal-delay="0.2">
+      <h2 class="text-xl sm:text-2xl font-bold text-[var(--text)] mb-6 flex items-center gap-3">
+        <svg class="w-6 h-6 text-[var(--accent)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        {ss[0].title}
+      </h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {ss[0].cards.map((card) => (
+          <a href={`/${lang}${card.href}/`} class="glow-card p-5 group hover:shadow-lg hover:shadow-[var(--shadow-color)] transition-all duration-200">
+            <div class="flex items-start gap-3">
+              <div>
+                <p class="font-semibold text-sm group-hover:text-[var(--accent)] transition-colors">{card.title}</p>
+                <p class="text-xs text-[var(--text-secondary)] mt-1 leading-relaxed">{card.desc}</p>
+              </div>
+            </div>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section class="mb-14" data-reveal data-reveal-delay="0.3">
+      <h2 class="text-xl sm:text-2xl font-bold text-[var(--text)] mb-6 flex items-center gap-3">
+        <svg class="w-6 h-6 text-[var(--accent)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        {ss[1].title}
+      </h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {ss[1].cards.map((card) => (
+          <a href={`/${lang}${card.href}/`} class="glow-card p-4 group hover:shadow-lg hover:shadow-[var(--shadow-color)] transition-all duration-200">
+            <p class="font-semibold text-sm group-hover:text-[var(--accent)] transition-colors">{card.title}</p>
+            <p class="text-xs text-[var(--text-secondary)] mt-1 leading-relaxed">{card.desc}</p>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section class="mb-14" data-reveal data-reveal-delay="0.4">
+      <h2 class="text-xl sm:text-2xl font-bold text-[var(--text)] mb-6 flex items-center gap-3">
+        <svg class="w-6 h-6 text-[var(--accent)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        {ss[2].title}
+      </h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {ss[2].cards.map((card) => (
+          <a href={`/${lang}${card.href}/`} class="glow-card p-4 group hover:shadow-lg hover:shadow-[var(--shadow-color)] transition-all duration-200">
+            <p class="font-semibold text-sm group-hover:text-[var(--accent)] transition-colors">{card.title}</p>
+            <p class="text-xs text-[var(--text-secondary)] mt-1 leading-relaxed">{card.desc}</p>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section class="mb-14" data-reveal data-reveal-delay="0.5">
+      <h2 class="text-xl sm:text-2xl font-bold text-[var(--text)] mb-6 flex items-center gap-3">
+        <svg class="w-6 h-6 text-[var(--accent)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 16 16 12 12 8"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+        {ss[3].title}
+      </h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {ss[3].cards.map((card) => (
+          <a href={`/${lang}${card.href}/`} class="glow-card p-5 group hover:shadow-lg hover:shadow-[var(--shadow-color)] transition-all duration-200">
+            <div class="flex items-start gap-3">
+              <div>
+                <p class="font-semibold text-sm group-hover:text-[var(--accent)] transition-colors">{card.title}</p>
+                <p class="text-xs text-[var(--text-secondary)] mt-1 leading-relaxed">{card.desc}</p>
+              </div>
+            </div>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section class="mb-14" data-reveal data-reveal-delay="0.7">
+      <h2 class="text-xl sm:text-2xl font-bold text-[var(--text)] mb-6 flex items-center gap-3">
+        <svg class="w-6 h-6 text-[var(--accent)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+        {di.quickStart.title}
+      </h2>
+      <div class="glow-card p-5">
+        <p class="text-sm text-[var(--text-secondary)] mb-4">{di.quickStart.desc}</p>
+        <div class="code-block-wrapper group relative">
+          <div class="flex items-center justify-between px-4 py-2 bg-[var(--bg-tertiary)] border-b border-[var(--border)] rounded-t-lg">
+            <span class="text-xs font-mono text-[var(--text-muted)] uppercase tracking-wider">{di.bash}</span>
+            <button class="copy-btn text-xs font-medium text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors opacity-0 group-hover:opacity-100" data-code="git clone https://github.com/dextryayers/HackIT.git">{di.copy}</button>
+          </div>
+          <pre class="bg-[var(--bg-secondary)] border border-[var(--border)] border-t-0 rounded-b-lg p-4 overflow-x-auto"><code class="text-sm font-mono text-[var(--text)] leading-relaxed whitespace-pre">git clone https://github.com/dextryayers/HackIT.git
+cd HackIT
+pip install -r requirements.txt
+python hackit/main.py ports scan -p 80,443 --targets example.com</code></pre>
+        </div>
+      </div>
+    </section>
+  </div>
+</Layout>

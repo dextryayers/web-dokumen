@@ -1,0 +1,76 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import { translations, type Lang } from "../../../i18n/translations";
+import CodeBlock from "../../../components/CodeBlock.astro";
+import DocSidebar from "../../../components/docs/DocSidebar.astro";
+import DocTOC from "../../../components/docs/DocTOC.astro";
+import DocPagination from "../../../components/docs/DocPagination.astro";
+import DocBreadcrumb from "../../../components/docs/DocBreadcrumb.astro";
+import DocSearch from "../../../components/docs/DocSearch.astro";
+
+export async function getStaticPaths() {
+  return [
+    { params: { lang: "en" } },
+    { params: { lang: "it" } },
+    { params: { lang: "id" } },
+    { params: { lang: "ru" } },
+    { params: { lang: "zh" } },
+    { params: { lang: "ja" } },
+  ];
+}
+
+const { lang } = Astro.params as { lang: Lang };
+const t = translations[lang];
+const d = t.docs.aiAgents;
+const headings = [
+  { id: "basic-usage", text: d.h_basicUsage, level: 2 },
+  { id: "configuration", text: d.h_configuration, level: 2 }
+];
+
+// page data
+
+// page data
+---
+
+<Layout lang={lang} t={t}>
+  <DocSidebar lang={lang} currentPath={Astro.url.pathname} headings={headings} />
+  <div class="max-w-none lg:ml-96 px-6 lg:px-10 pt-24 lg:pt-28 pb-16 lg:pb-24">
+    <div class="lg:flex lg:gap-0">
+      <main class="flex-1 min-w-0 lg:pl-20 xl:pl-28">
+        <DocBreadcrumb lang={lang} items={[{ label: d.title }]} />
+        <div class="my-6"><DocSearch t={t} lang={lang} /></div>
+        <h1 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold gradient-text" data-reveal>{d.title}</h1>
+        <p class="text-base sm:text-lg text-[var(--text-secondary)] mt-4 mb-10 leading-relaxed" data-reveal data-reveal-delay="0.1">{d.desc}</p>
+
+        <section id="basic-usage" class="mb-14 scroll-mt-28" data-reveal data-reveal-delay="0.2">
+  <h2 class="text-xl sm:text-2xl font-bold text-[var(--text)] mb-5">{d.h_basicUsage}</h2>
+  <p class="text-sm sm:text-base text-[var(--text-secondary)] mb-6 leading-relaxed">
+    The Agent module in <code class="text-[var(--accent)]">hackit/agent/</code> provides an interactive interface for querying an AI model. Launch it with <code class="text-[var(--accent)]">hackit agent</code> to enter an interactive session where you can ask natural language questions and receive analysis or recommendations relevant to your penetration testing tasks.
+  </p>
+  <p class="text-sm sm:text-base text-[var(--text-secondary)] mb-6 leading-relaxed">
+    Once inside the interactive session, you can ask the AI model questions about your target, such as identifying potential exploits, analyzing scan output, or generating payload suggestions. The module supports a single AI provider and does not use multiple agents or swarm collaboration.
+  </p>
+  <CodeBlock code={`# Launch the interactive AI agent
+hackit agent`} lang="bash" />
+</section>
+
+<section id="configuration" class="mb-14 scroll-mt-28" data-reveal data-reveal-delay="0.3">
+  <h2 class="text-xl sm:text-2xl font-bold text-[var(--text)] mb-5">{d.h_configuration}</h2>
+  <p class="text-sm sm:text-base text-[var(--text-secondary)] mb-6 leading-relaxed">
+    The Agent module requires an API key for the AI provider. Set the <code class="text-[var(--accent)]">OPENAI_API_KEY</code> environment variable or configure it in <code class="text-[var(--accent)]">hackit/config.json</code>. The agent configuration is minimal — specify the provider, model, and API key.
+  </p>
+  <p class="text-sm sm:text-base text-[var(--text-secondary)] mb-6 leading-relaxed">
+    There are no multiple agents, collaboration modes, or plugin systems for the agent module. It is a straightforward interactive interface designed for quick AI-assisted analysis during penetration testing engagements.
+  </p>
+  <CodeBlock code={`# Set API key via environment variable
+$env:OPENAI_API_KEY = "sk-..."
+
+# Launch the agent
+hackit agent`} lang="bash" />
+</section>
+</main>
+      <DocTOC headings={headings} />
+    </div>
+    <DocPagination lang={lang} currentPath={Astro.url.pathname} />
+  </div>
+</Layout>

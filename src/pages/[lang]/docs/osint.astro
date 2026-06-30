@@ -1,0 +1,98 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import { translations, type Lang } from "../../../i18n/translations";
+import CodeBlock from "../../../components/CodeBlock.astro";
+import DocSidebar from "../../../components/docs/DocSidebar.astro";
+import DocTOC from "../../../components/docs/DocTOC.astro";
+import DocPagination from "../../../components/docs/DocPagination.astro";
+import DocBreadcrumb from "../../../components/docs/DocBreadcrumb.astro";
+import DocSearch from "../../../components/docs/DocSearch.astro";
+
+export async function getStaticPaths() {
+  return [
+    { params: { lang: "en" } },
+    { params: { lang: "it" } },
+    { params: { lang: "id" } },
+    { params: { lang: "ru" } },
+    { params: { lang: "zh" } },
+    { params: { lang: "ja" } },
+  ];
+}
+
+const { lang } = Astro.params as { lang: Lang };
+const t = translations[lang];
+const d = t.docs.osint;
+const headings = [
+  { id: "recon", text: d.h_recon, level: 2 },
+  { id: "social", text: d.h_social, level: 2 },
+  { id: "threat", text: d.h_threat, level: 2 }
+];
+
+// page data
+
+// page data
+---
+
+<Layout lang={lang} t={t}>
+  <DocSidebar lang={lang} currentPath={Astro.url.pathname} headings={headings} />
+  <div class="max-w-none lg:ml-96 px-6 lg:px-10 pt-24 lg:pt-28 pb-16 lg:pb-24">
+    <div class="lg:flex lg:gap-0">
+      <main class="flex-1 min-w-0 lg:pl-20 xl:pl-28">
+        <DocBreadcrumb lang={lang} items={[{ label: d.title }]} />
+        <div class="my-6"><DocSearch t={t} lang={lang} /></div>
+        <h1 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold gradient-text" data-reveal>{d.title}</h1>
+        <p class="text-base sm:text-lg text-[var(--text-secondary)] mt-4 mb-10 leading-relaxed" data-reveal data-reveal-delay="0.1">{d.desc}</p>
+
+        <section id="recon" class="mb-14 scroll-mt-28" data-reveal data-reveal-delay="0.2">
+  <h2 class="text-xl sm:text-2xl font-bold text-[var(--text)] mb-5">{d.h_recon}</h2>
+  <p class="text-sm sm:text-base text-[var(--text-secondary)] mb-6 leading-relaxed">
+    The <code class="text-[var(--accent)]">osint</code> module in HackIT performs domain-level open-source intelligence gathering. It is located at <code class="text-[var(--accent)]">hackit/osint/</code> and is invoked via <code class="text-[var(--accent)]">hackit osint</code> or <code class="text-[var(--accent)]">hackit recon osint</code> for an interactive intelligence gathering session. The module collects DNS records, WHOIS data, and public information associated with the target domain.
+  </p>
+  <p class="text-sm sm:text-base text-[var(--text-secondary)] mb-6 leading-relaxed">
+    Domain intelligence includes WHOIS lookups, DNS record enumeration, and subdomain discovery. The output provides a summary of discovered records and associated metadata, helping map the target's online infrastructure for further testing.
+  </p>
+  <CodeBlock code="hackit osint" lang="bash" t={t} />
+  <p class="text-sm sm:text-base text-[var(--text-secondary)] mb-6 leading-relaxed">
+    For broader infrastructure analysis, pair OSINT with other HackIT modules such as <code class="text-[var(--accent)]">hackit recon subdomains -d target.com</code> for subdomain enumeration or <code class="text-[var(--accent)]">hackit web tech --url https://target.com</code> for technology stack detection.
+  </p>
+</section>
+
+<section id="social" class="mb-14 scroll-mt-28" data-reveal data-reveal-delay="0.3">
+  <h2 class="text-xl sm:text-2xl font-bold text-[var(--text)] mb-5">{d.h_social}</h2>
+  <p class="text-sm sm:text-base text-[var(--text-secondary)] mb-6 leading-relaxed">
+    Social engineering is handled by a dedicated <code class="text-[var(--accent)]">sosialengineer</code> module located at <code class="text-[var(--accent)]">hackit/sosialengineer/</code>. It is separate from the OSINT module and provides targeted attack simulation capabilities.
+  </p>
+  <p class="text-sm sm:text-base text-[var(--text-secondary)] mb-6 leading-relaxed">
+    The module supports multiple social engineering methods including phishing simulations. This module is designed for authorized security assessments only.
+  </p>
+  <p class="text-sm sm:text-base text-[var(--text-secondary)] mb-6 leading-relaxed">
+    Note: The <code class="text-[var(--accent)]">sosialengineer</code> module exists as a Python library but does not expose a direct CLI command. It is used programmatically within the framework.
+  </p>
+</section>
+
+<section id="threat" class="mb-14 scroll-mt-28" data-reveal data-reveal-delay="0.4">
+  <h2 class="text-xl sm:text-2xl font-bold text-[var(--text)] mb-5">{d.h_threat}</h2>
+  <p class="text-sm sm:text-base text-[var(--text-secondary)] mb-6 leading-relaxed">
+    The OSINT module provides domain-level intelligence that can be used for threat assessment. Run <code class="text-[var(--accent)]">hackit osint</code> to discover DNS records, mail server configurations, and other publicly exposed information that may indicate security posture.
+  </p>
+  <p class="text-sm sm:text-base text-[var(--text-secondary)] mb-6 leading-relaxed">
+    For vulnerability correlation, combine OSINT findings with <code class="text-[var(--accent)]">hackit util cve --software apache --version 2.4.49</code> to check for known vulnerabilities affecting discovered services. The <code class="text-[var(--accent)]">hackit agent</code> command launches an interactive AI assistant that can help process collected intelligence.
+  </p>
+  <CodeBlock code={`# Gather domain intelligence
+hackit osint
+
+# Correlate with CVE data
+hackit util cve --software apache --version 2.4.49
+
+# AI-assisted analysis
+hackit agent`} lang="bash" t={t} />
+  <p class="text-sm sm:text-base text-[var(--text-secondary)] mb-6 leading-relaxed">
+    Findings from OSINT can be used to prioritize further testing by identifying exposed services, mail server configurations, and domain-related information that may reveal attack surface.
+  </p>
+</section>
+</main>
+      <DocTOC headings={headings} />
+    </div>
+    <DocPagination lang={lang} currentPath={Astro.url.pathname} />
+  </div>
+</Layout>

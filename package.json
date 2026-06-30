@@ -1,0 +1,22 @@
+{
+  "name": "hackit-docs",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "HackIT - All-in-One Penetration Testing & Security Framework Documentation",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/tailwind": "^5.1.0",
+    "astro": "^4.16.0",
+    "gsap": "^3.12.5",
+    "scrollreveal": "^4.0.9",
+    "tailwindcss": "^3.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0"
+  }
+}

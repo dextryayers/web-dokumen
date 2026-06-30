@@ -1,0 +1,152 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import { translations, type Lang } from "../../../i18n/translations";
+import CodeBlock from "../../../components/CodeBlock.astro";
+import DocSidebar from "../../../components/docs/DocSidebar.astro";
+import DocTOC from "../../../components/docs/DocTOC.astro";
+import DocPagination from "../../../components/docs/DocPagination.astro";
+import DocBreadcrumb from "../../../components/docs/DocBreadcrumb.astro";
+import DocSearch from "../../../components/docs/DocSearch.astro";
+
+export async function getStaticPaths() {
+  return [
+    { params: { lang: "en" } },
+    { params: { lang: "it" } },
+    { params: { lang: "id" } },
+    { params: { lang: "ru" } },
+    { params: { lang: "zh" } },
+    { params: { lang: "ja" } },
+  ];
+}
+
+const { lang } = Astro.params as { lang: Lang };
+const t = translations[lang];
+const d = t.docs.configuration;
+const headings = [
+  { id: "config-file", text: d.h_configFile, level: 2 },
+  { id: "environment", text: d.h_environment, level: 2 },
+  { id: "options", text: d.h_options, level: 2 }
+];
+
+// page data
+
+// page data
+---
+
+<Layout lang={lang} t={t}>
+  <DocSidebar lang={lang} currentPath={Astro.url.pathname} headings={headings} />
+  <div class="max-w-none lg:ml-96 px-6 lg:px-10 pt-24 lg:pt-28 pb-16 lg:pb-24">
+    <div class="lg:flex lg:gap-0">
+      <main class="flex-1 min-w-0 lg:pl-20 xl:pl-28">
+        <DocBreadcrumb lang={lang} items={[{ label: d.title }]} />
+        <div class="my-6"><DocSearch t={t} lang={lang} /></div>
+        <h1 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold gradient-text" data-reveal>{d.title}</h1>
+        <p class="text-base sm:text-lg text-[var(--text-secondary)] mt-4 mb-10 leading-relaxed" data-reveal data-reveal-delay="0.1">{d.desc}</p>
+
+        <section id="config-file" class="mb-14 scroll-mt-28" data-reveal data-reveal-delay="0.2">
+  <h2 class="text-xl sm:text-2xl font-bold text-[var(--text)] mb-5">{d.h_configFile}</h2>
+  <p class="text-sm sm:text-base text-[var(--text-secondary)] mb-6 leading-relaxed">
+    HackIT uses a <strong>JSON configuration file</strong> located at <code class="text-[var(--accent)]">~/.hackit_config.json</code>. Create this file to customize your CLI appearance and AI provider settings.
+  </p>
+
+  <h3 class="text-lg sm:text-xl font-semibold text-[var(--text)] mb-3">{d.h_availableFields}</h3>
+  <ul class="list-disc pl-6 text-sm sm:text-base text-[var(--text-secondary)] mb-6 leading-relaxed space-y-1">
+    <li><code class="text-[var(--accent)]">theme</code> — Theme name (e.g., kali, default).</li>
+    <li><code class="text-[var(--accent)]">user</code> — Username displayed in the prompt.</li>
+    <li><code class="text-[var(--accent)]">hostname</code> — Hostname displayed in the prompt.</li>
+    <li><code class="text-[var(--accent)]">accent</code> — Accent color for the CLI (hex code).</li>
+    <li><code class="text-[var(--accent)]">border</code> — Border color for the CLI (hex code).</li>
+    <li><code class="text-[var(--accent)]">prompt</code> — Custom prompt string.</li>
+    <li><code class="text-[var(--accent)]">ai_provider</code> — AI provider (e.g., openai).</li>
+    <li><code class="text-[var(--accent)]">ai_keys</code> — Object mapping provider names to API keys.</li>
+    <li><code class="text-[var(--accent)]">ai_models</code> — Object mapping provider names to model names.</li>
+  </ul>
+
+  <h3 class="text-lg sm:text-xl font-semibold text-[var(--text)] mb-3">{d.h_exampleConfig}</h3>
+  <p class="text-sm sm:text-base text-[var(--text-secondary)] mb-4 leading-relaxed">
+    Below is a typical configuration file:
+  </p>
+  <CodeBlock
+    code={`{
+  "theme": "kali",
+  "user": "root",
+  "hostname": "hackit",
+  "accent": "#00ff00",
+  "border": "#303030",
+  "prompt": "HackIT>",
+  "ai_provider": "openai",
+  "ai_keys": {
+    "openai": "sk-..."
+  },
+  "ai_models": {
+    "openai": "gpt-4"
+  }
+}`}
+    lang="json"
+    t={t}
+  />
+  <p class="text-sm text-[var(--text-secondary)] mt-4 leading-relaxed">
+    Use the config command to set values: <code class="text-[var(--accent)]">hackit config --theme kali</code>
+  </p>
+</section>
+
+<section id="environment" class="mb-14 scroll-mt-28" data-reveal data-reveal-delay="0.3">
+  <h2 class="text-xl sm:text-2xl font-bold text-[var(--text)] mb-5">{d.h_environment}</h2>
+  <p class="text-sm sm:text-base text-[var(--text-secondary)] mb-6 leading-relaxed">
+    Environment variables provide a convenient way to configure HackIT at runtime without editing configuration files. They are especially useful for passing <strong>sensitive data</strong> such as API keys.
+  </p>
+
+  <h3 class="text-lg sm:text-xl font-semibold text-[var(--text)] mb-3">{d.h_availableVariables}</h3>
+  <ul class="list-disc pl-6 text-sm sm:text-base text-[var(--text-secondary)] mb-6 leading-relaxed space-y-1">
+    <li><code class="text-[var(--accent)]">OPENAI_API_KEY</code> — API key for OpenAI (used by the hackit agent module).</li>
+    <li><code class="text-[var(--accent)]">HACKIT_PROXY</code> — Proxy URL for routing traffic through a proxy.</li>
+  </ul>
+
+  <h3 class="text-lg sm:text-xl font-semibold text-[var(--text)] mb-3">{d.h_usageExample}</h3>
+  <p class="text-sm sm:text-base text-[var(--text-secondary)] mb-4 leading-relaxed">
+    Set environment variables before running:
+  </p>
+  <CodeBlock
+    code={`$env:OPENAI_API_KEY = "sk-..."
+$env:HACKIT_PROXY = "http://127.0.0.1:8080"
+python hackit/main.py agent`}
+    lang="powershell"
+    t={t}
+  />
+</section>
+
+<section id="options" class="mb-14 scroll-mt-28" data-reveal data-reveal-delay="0.4">
+  <h2 class="text-xl sm:text-2xl font-bold text-[var(--text)] mb-5">{d.h_options}</h2>
+  <p class="text-sm sm:text-base text-[var(--text-secondary)] mb-6 leading-relaxed">
+    HackIT provides CLI options through Click groups for modular command routing.
+  </p>
+
+  <h3 class="text-lg sm:text-xl font-semibold text-[var(--text)] mb-3">{d.h_cliGroups}</h3>
+  <ul class="list-disc pl-6 text-sm sm:text-base text-[var(--text-secondary)] mb-6 leading-relaxed space-y-1">
+    <li><code class="text-[var(--accent)]">ports</code> — Port scanning commands.</li>
+    <li><code class="text-[var(--accent)]">web</code> — Web application testing commands.</li>
+    <li><code class="text-[var(--accent)]">vuln</code> — Vulnerability detection commands.</li>
+    <li><code class="text-[var(--accent)]">recon</code> — Reconnaissance and OSINT commands.</li>
+    <li><code class="text-[var(--accent)]">ssl</code> — SSL/TLS auditing commands.</li>
+    <li><code class="text-[var(--accent)]">util</code> — Utility commands (CVE search, config).</li>
+  </ul>
+
+  <h3 class="text-lg sm:text-xl font-semibold text-[var(--text)] mb-3">{d.h_usageExample}</h3>
+  <p class="text-sm sm:text-base text-[var(--text-secondary)] mb-4 leading-relaxed">
+    Run commands using the CLI group syntax:
+  </p>
+  <CodeBlock
+    code={`python hackit/main.py ports scan -p 80,443 --targets example.com
+python -m hackit.main web headers --url https://target.com
+python hackit/main.py config --theme kali`}
+    lang="bash"
+    t={t}
+  />
+</section>
+</main>
+      <DocTOC headings={headings} />
+    </div>
+    <DocPagination lang={lang} currentPath={Astro.url.pathname} />
+  </div>
+</Layout>
+

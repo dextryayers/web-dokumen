@@ -1,0 +1,124 @@
+---
+const { t } = Astro.props;
+
+const progressData = [
+  { label: "Port Scanner Engine", pct: 95, gradient: "from-[var(--accent)] to-cyan-400" },
+  { label: "AI Agent Swarm", pct: 88, gradient: "from-purple-500 to-pink-500" },
+  { label: "OSINT Enrichment", pct: 92, gradient: "from-emerald-500 to-teal-400" },
+  { label: "Wireless 802.11", pct: 78, gradient: "from-orange-500 to-rose-400" },
+];
+
+const langs = [
+  { name: "Python", color: "text-blue-400", bg: "bg-blue-500/10", border: "border-blue-500/20" },
+  { name: "Go", color: "text-cyan-400", bg: "bg-cyan-500/10", border: "border-cyan-500/20" },
+  { name: "C", color: "text-slate-300", bg: "bg-slate-500/10", border: "border-slate-500/20" },
+  { name: "C++", color: "text-blue-400", bg: "bg-blue-500/10", border: "border-blue-500/20" },
+  { name: "Rust", color: "text-orange-400", bg: "bg-orange-500/10", border: "border-orange-500/20" },
+  { name: "Lua", color: "text-indigo-400", bg: "bg-indigo-500/10", border: "border-indigo-500/20" },
+  { name: "C#", color: "text-purple-400", bg: "bg-purple-500/10", border: "border-purple-500/20" },
+  { name: "Ruby", color: "text-red-400", bg: "bg-red-500/10", border: "border-red-500/20" },
+  { name: "JS", color: "text-yellow-400", bg: "bg-yellow-500/10", border: "border-yellow-500/20" },
+];
+---
+
+<section id="what-is-hackit" class="relative py-24 px-4 overflow-hidden">
+  <div class="absolute inset-0 bg-[var(--bg-secondary)] pointer-events-none"></div>
+  <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[var(--border)] to-transparent"></div>
+
+  <div class="max-w-6xl mx-auto relative z-10">
+    <div class="text-center mb-16">
+      <span class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-purple-500/20 bg-purple-500/5 text-xs font-semibold text-purple-400 mb-4">Overview</span>
+      <h2 class="section-title mb-4">{t.whatIs.title}</h2>
+      <p class="text-[var(--text-secondary)] max-w-3xl mx-auto text-sm leading-relaxed">{t.whatIs.desc}</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-start">
+      <div class="space-y-5">
+        {t.whatIs.items.map((item, i) => (
+          <div class="group flex items-start gap-4 p-5 rounded-xl border border-[var(--border)] bg-[var(--card-bg)] hover:border-[var(--accent)]/30 hover:shadow-md hover:shadow-[var(--accent-glow)] transition-all duration-300 reveal-item" data-reveal>
+            <div class="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 bg-gradient-to-br from-[var(--accent)]/10 to-purple-500/10 border border-[var(--accent)]/20 text-[var(--accent)] group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <div>
+              <h4 class="font-bold text-[15px] mb-1 group-hover:text-[var(--accent)] transition-colors duration-300">{item.title}</h4>
+              <p class="text-sm text-[var(--text-secondary)] leading-relaxed">{item.desc}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div class="relative reveal-right" data-reveal>
+        <div class="absolute -inset-1 bg-gradient-to-r from-[var(--accent)] via-purple-500 via-pink-500 to-cyan-500 rounded-2xl opacity-15 blur-xl -z-10"></div>
+        <div class="relative z-10 p-6 sm:p-8 rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] shadow-xl">
+          <div class="flex items-center justify-center mb-8">
+            <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-[var(--accent)]/10 to-purple-500/10 border border-[var(--accent)]/20 flex items-center justify-center">
+              <svg width="32" height="32" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="2" y="2" width="24" height="24" rx="6" stroke="var(--accent)" stroke-width="2" fill="none"/>
+                <path d="M9 14L12 17L19 10" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle cx="14" cy="14" r="3" fill="var(--accent)" opacity="0.3"/>
+              </svg>
+            </div>
+          </div>
+
+          <div class="flex flex-wrap justify-center gap-2 mb-8">
+            {langs.map(l => (
+              <span class={`px-3 py-1 rounded-full text-[11px] font-bold ${l.bg} ${l.border} border ${l.color} hover:scale-110 transition-transform duration-200 cursor-default`}>{l.name}</span>
+            ))}
+          </div>
+
+          <div class="space-y-4 mb-6">
+            {progressData.map((p, i) => (
+              <div data-delay={i * 0.15}>
+                <div class="flex justify-between text-xs text-[var(--text-muted)] mb-1.5"><span class="font-medium">{p.label}</span><span class="font-bold">{p.pct}%</span></div>
+                <div class="h-2.5 rounded-full bg-[var(--bg-tertiary)] overflow-hidden shadow-inner">
+                  <div id={`progress-${i}`} class="h-full rounded-full bg-gradient-to-r progress-bar ${p.gradient}" style="width:0%"></div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div class="grid grid-cols-3 gap-3 pt-6 border-t border-[var(--border)]">
+            {[
+              { value: "v2.1.0", label: "Latest", color: "text-[var(--accent)]" },
+              { value: "Apache 2.0", label: "License", color: "text-purple-400" },
+              { value: "Dual", label: "Licensing", color: "text-emerald-400" },
+            ].map(s => (
+              <div class="text-center p-3 rounded-xl bg-[var(--bg-tertiary)] hover:bg-[var(--bg-tertiary)]/80 hover:scale-105 transition-all duration-200">
+                <div class={`text-lg sm:text-xl font-extrabold ${s.color}`}>{s.value}</div>
+                <div class="text-[11px] text-[var(--text-muted)] font-medium mt-0.5">{s.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+import gsap from 'gsap';
+try {
+
+(function () {
+  var rm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (rm) return;
+  var progressCounted = {};
+  var o2 = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting && !progressCounted[entry.target.dataset.pid]) {
+        var bars = entry.target.querySelectorAll('[id^="progress-"]');
+        bars.forEach(function (bar) {
+          var idx = parseInt(bar.id.replace('progress-', ''));
+          var pcts = [95, 88, 92, 78];
+          gsap.to(bar, { width: pcts[idx] + '%', duration: 1.2, delay: idx * 0.15, ease: 'power2.out' });
+        });
+        progressCounted[entry.target.dataset.pid] = true;
+        o2.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.3 });
+  var rightPanel = document.querySelector('#what-is-hackit .reveal-right');
+  if (rightPanel) { rightPanel.dataset.pid = 'progress'; o2.observe(rightPanel); }
+})();
+} catch(e) { console.error('WhatIsHackIT:', e); }
+</script>

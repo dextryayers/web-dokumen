@@ -1,0 +1,37 @@
+---
+import { docNav, type DocNavItem, type DocNavSection } from "./docNav";
+
+const { lang, currentPath } = Astro.props as { lang: string; currentPath: string };
+const nav = docNav[lang] || docNav.en;
+const cleanPath = currentPath.replace(new RegExp("^/" + lang), "") || "/docs/";
+
+let allItems: DocNavItem[] = [];
+nav.sections.forEach((s: DocNavSection) => { if (s.items) allItems = allItems.concat(s.items); });
+
+let prev: DocNavItem | null = null;
+let next: DocNavItem | null = null;
+
+for (let i = 0; i < allItems.length; i++) {
+  const itemHref = "/" + lang + allItems[i].href;
+  if (currentPath === itemHref || cleanPath === allItems[i].href) {
+    if (i > 0) prev = allItems[i - 1];
+    if (i < allItems.length - 1) next = allItems[i + 1];
+    break;
+  }
+}
+---
+
+<div class="mt-12 flex items-center justify-between border-t border-[var(--border)] pt-8">
+  {prev ? (
+    <a href={"/" + lang + prev.href} class="group inline-flex items-center gap-2 text-[var(--text-secondary)] hover:text-[var(--text)] transition-colors">
+      <svg class="w-4 h-4 transition-transform group-hover:-translate-x-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+      <span class="text-sm">{prev.title}</span>
+    </a>
+  ) : <span></span>}
+  {next ? (
+    <a href={"/" + lang + next.href} class="group inline-flex items-center gap-2 text-[var(--accent)] hover:underline font-medium">
+      <span class="text-sm">{next.title}</span>
+      <svg class="w-4 h-4 transition-transform group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+    </a>
+  ) : <span></span>}
+</div>

@@ -1,0 +1,73 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import { translations, type Lang } from "../../../i18n/translations";
+import CodeBlock from "../../../components/CodeBlock.astro";
+import DocSidebar from "../../../components/docs/DocSidebar.astro";
+import DocTOC from "../../../components/docs/DocTOC.astro";
+import DocPagination from "../../../components/docs/DocPagination.astro";
+import DocBreadcrumb from "../../../components/docs/DocBreadcrumb.astro";
+import DocSearch from "../../../components/docs/DocSearch.astro";
+
+export async function getStaticPaths() {
+  return [
+    { params: { lang: "en" } },
+    { params: { lang: "it" } },
+    { params: { lang: "id" } },
+    { params: { lang: "ru" } },
+    { params: { lang: "zh" } },
+    { params: { lang: "ja" } },
+  ];
+}
+
+const { lang } = Astro.params as { lang: Lang };
+const t = translations[lang];
+const d = t.docs.wireless;
+const headings = [
+  { id: "scanning", text: d.h_scanning, level: 2 },
+  { id: "assessment", text: d.h_assessment, level: 2 }
+];
+
+// page data
+
+// page data
+---
+
+<Layout lang={lang} t={t}>
+  <DocSidebar lang={lang} currentPath={Astro.url.pathname} headings={headings} />
+  <div class="max-w-none lg:ml-96 px-6 lg:px-10 pt-24 lg:pt-28 pb-16 lg:pb-24">
+    <div class="lg:flex lg:gap-0">
+      <main class="flex-1 min-w-0 lg:pl-20 xl:pl-28">
+        <DocBreadcrumb lang={lang} items={[{ label: d.title }]} />
+        <div class="my-6"><DocSearch t={t} lang={lang} /></div>
+        <h1 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold gradient-text" data-reveal>{d.title}</h1>
+        <p class="text-base sm:text-lg text-[var(--text-secondary)] mt-4 mb-10 leading-relaxed" data-reveal data-reveal-delay="0.1">{d.desc}</p>
+
+        <section id="scanning" class="mb-14 scroll-mt-28" data-reveal data-reveal-delay="0.2">
+  <h2 class="text-xl sm:text-2xl font-bold text-[var(--text)] mb-5">{d.h_scanning}</h2>
+  <p class="text-sm sm:text-base text-[var(--text-secondary)] mb-6 leading-relaxed">
+    The Wireless module performs <strong class="text-[var(--text)]">802.11 wireless scanning</strong> on supported interfaces. It operates in monitor mode to capture and analyze wireless traffic, discovering nearby access points, their BSSID, SSID, channel, signal strength, and encryption type. The module is implemented in C# under <code class="text-[var(--accent)]">hackit/wireless/WirelessAuditCore/</code> and provides basic wireless assessment capabilities.
+  </p>
+  <p class="text-sm sm:text-base text-[var(--text-secondary)] mb-6 leading-relaxed">
+    Scanning requires <strong class="text-[var(--text)]">root or sudo privileges</strong> and a compatible wireless adapter that supports monitor mode. Use <code class="text-[var(--accent)]">hackit wireless</code> to launch the interactive wireless console.
+  </p>
+  <CodeBlock code={`# Launch the wireless interactive console
+hackit wireless`} lang="bash" t={t} />
+</section>
+
+<section id="assessment" class="mb-14 scroll-mt-28" data-reveal data-reveal-delay="0.3">
+  <h2 class="text-xl sm:text-2xl font-bold text-[var(--text)] mb-5">{d.h_assessment}</h2>
+  <p class="text-sm sm:text-base text-[var(--text-secondary)] mb-6 leading-relaxed">
+    After launching the wireless console, the module provides basic analysis of the discovered wireless environment. It reports detected access points with signal strength, channel utilization, and encryption status. The assessment output can be saved for integration into a broader penetration testing workflow.
+  </p>
+  <p class="text-sm sm:text-base text-[var(--text-secondary)] mb-6 leading-relaxed">
+    Wireless assessment focuses on reconnaissance and reporting rather than exploitation. Results are presented in the console and can be exported in JSON format for further analysis with external tools.
+  </p>
+  <CodeBlock code={`# Launch the wireless interactive console
+hackit wireless`} lang="bash" t={t} />
+</section>
+</main>
+      <DocTOC headings={headings} />
+    </div>
+    <DocPagination lang={lang} currentPath={Astro.url.pathname} />
+  </div>
+</Layout>

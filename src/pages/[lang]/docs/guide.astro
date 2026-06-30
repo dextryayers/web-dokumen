@@ -1,0 +1,131 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import { translations, type Lang } from "../../../i18n/translations";
+import CodeBlock from "../../../components/CodeBlock.astro";
+import DocSidebar from "../../../components/docs/DocSidebar.astro";
+import DocTOC from "../../../components/docs/DocTOC.astro";
+import DocPagination from "../../../components/docs/DocPagination.astro";
+import DocBreadcrumb from "../../../components/docs/DocBreadcrumb.astro";
+import DocSearch from "../../../components/docs/DocSearch.astro";
+
+export async function getStaticPaths() {
+  return [
+    { params: { lang: "en" } },
+    { params: { lang: "it" } },
+    { params: { lang: "id" } },
+    { params: { lang: "ru" } },
+    { params: { lang: "zh" } },
+    { params: { lang: "ja" } },
+  ];
+}
+
+const { lang } = Astro.params as { lang: Lang };
+const t = translations[lang];
+const d = t.docs.guide;
+const headings = [
+  { id: "basics", text: d.h_basics, level: 2 },
+  { id: "workflow", text: d.h_workflow, level: 2 },
+  { id: "best-practices", text: d.h_bestPractices, level: 2 }
+];
+
+// page data
+
+// page data
+---
+
+<Layout lang={lang} t={t}>
+  <DocSidebar lang={lang} currentPath={Astro.url.pathname} headings={headings} />
+  <div class="max-w-none lg:ml-96 px-6 lg:px-10 pt-24 lg:pt-28 pb-16 lg:pb-24">
+    <div class="lg:flex lg:gap-0">
+      <main class="flex-1 min-w-0 lg:pl-20 xl:pl-28">
+        <DocBreadcrumb lang={lang} items={[{ label: d.title }]} />
+        <div class="my-6"><DocSearch t={t} lang={lang} /></div>
+        <h1 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold gradient-text" data-reveal>{d.title}</h1>
+        <p class="text-base sm:text-lg text-[var(--text-secondary)] mt-4 mb-10 leading-relaxed" data-reveal data-reveal-delay="0.1">{d.desc}</p>
+
+        <section id="basics" class="mb-14 scroll-mt-28" data-reveal data-reveal-delay="0.2">
+  <h2 class="text-xl sm:text-2xl font-bold text-[var(--text)] mb-5">{d.h_basics}</h2>
+  <p class="text-sm sm:text-base text-[var(--text-secondary)] mb-6 leading-relaxed">
+    HackIT is a Python-based modular penetration testing framework organized under distinct tool categories. Each tool lives in its own directory under <code class="text-[var(--accent)]">/hackit/</code> and is invoked via the <code class="text-[var(--accent)]">hackit</code> CLI command with a specific subcommand.
+  </p>
+  <p class="text-sm sm:text-base text-[var(--text-secondary)] mb-4 leading-relaxed">
+    Tool categories include <strong class="text-[var(--text)]">Reconnaissance</strong> (port scanning, network scanning, subdomain enumeration, OSINT), <strong class="text-[var(--text)]">Web</strong> (directory finding, tech detection, web fuzzing, header audit, JS analysis, parameter discovery, 403 bypass), <strong class="text-[var(--text)]">Vulnerability</strong> (XSS, SQLi, open redirect, RCE, Atomix), <strong class="text-[var(--text)]">SSL</strong> (certificate analysis), <strong class="text-[var(--text)]">Utilities</strong> (CVE lookup, AI agent), <strong class="text-[var(--text)]">Wireless</strong> (Wi-Fi scanning), and <strong class="text-[var(--text)]">Configuration</strong> (theme settings).
+  </p>
+  <CodeBlock code={`# Port scanning
+hackit ports scan -p 80,443 --targets target.com
+
+# Directory and subdomain discovery
+hackit dirfinder --url https://target.com
+hackit recon subdomains -d target.com
+
+# Web vulnerability scanning
+hackit vuln xss --url https://target.com
+hackit vuln sqli --url "http://site.com?id=1" --dbs
+
+# OSINT and network
+hackit osint
+hackit recon ips --network 192.168.1.0/24`}
+    lang="bash" />
+  <p class="text-sm sm:text-base text-[var(--text-secondary)] my-4 leading-relaxed">
+    The framework is available at <a href="https://github.com/dextryayers/HackIT" class="text-[var(--accent)] underline">github.com/dextryayers/HackIT</a>. All tools follow the pattern <code class="text-[var(--accent)]">hackit &lt;group&gt; &lt;module&gt; [options]</code> and can be combined into a broader testing workflow.
+  </p>
+</section>
+
+<section id="workflow" class="mb-14 scroll-mt-28" data-reveal data-reveal-delay="0.3">
+  <h2 class="text-xl sm:text-2xl font-bold text-[var(--text)] mb-5">{d.h_workflow}</h2>
+  <p class="text-sm sm:text-base text-[var(--text-secondary)] mb-6 leading-relaxed">
+    A typical penetration testing workflow progresses from reconnaissance through web analysis and exploitation.
+  </p>
+  <ol class="list-decimal list-inside text-sm sm:text-base text-[var(--text-secondary)] mb-6 leading-relaxed space-y-3">
+    <li><strong class="text-[var(--text)]">Port & Network Scanning</strong> — Discover live hosts and open services: <code class="text-[var(--accent)]">hackit ports scan -p 22,80,443 --targets target.com</code> and <code class="text-[var(--accent)]">hackit recon ips --network 192.168.1.0/24</code></li>
+    <li><strong class="text-[var(--text)]">Web Reconnaissance</strong> — Enumerate directories and technology stacks: <code class="text-[var(--accent)]">hackit dirfinder --url https://target.com</code> then <code class="text-[var(--accent)]">hackit web tech --url https://target.com</code></li>
+    <li><strong class="text-[var(--text)]">Vulnerability Assessment</strong> — Test for XSS, SQLi, SSL issues, header misconfigurations, and open redirects: <code class="text-[var(--accent)]">hackit vuln xss --url https://target.com</code></li>
+    <li><strong class="text-[var(--text)]">Exploitation</strong> — Run CVE lookups and RCE testing: <code class="text-[var(--accent)]">hackit util cve --software apache --version 2.4.49</code> and <code class="text-[var(--accent)]">hackit vuln rce -u "http://site.com?cmd=ls" --detect</code></li>
+    <li><strong class="text-[var(--text)]">OSINT</strong> — Gather domain intelligence and analyze public data: <code class="text-[var(--accent)]">hackit osint</code></li>
+    <li><strong class="text-[var(--text)]">Reporting</strong> — Correlate findings using the AI agent: <code class="text-[var(--accent)]">hackit agent</code></li>
+  </ol>
+  <CodeBlock code={`# Full engagement pipeline
+hackit ports scan -p 22,80,443,8080 --targets target.com
+hackit dirfinder --url https://target.com
+hackit recon subdomains -d target.com
+hackit web tech --url https://target.com
+hackit web fuzz --url https://target.com
+hackit util cve --software apache --version 2.4.49`}
+    lang="bash" />
+  <p class="text-sm sm:text-base text-[var(--text-secondary)] mt-4 leading-relaxed">
+    Results from each tool can inform the next stage, enabling rapid iterative testing across the full attack surface.
+  </p>
+</section>
+
+<section id="best-practices" class="mb-14 scroll-mt-28" data-reveal data-reveal-delay="0.4">
+  <h2 class="text-xl sm:text-2xl font-bold text-[var(--text)] mb-5">{d.h_bestPractices}</h2>
+  <p class="text-sm sm:text-base text-[var(--text-secondary)] mb-6 leading-relaxed">
+    Following established best practices ensures your engagements remain effective, stealthy, and well-organized.
+  </p>
+  <ul class="list-disc list-inside text-sm sm:text-base text-[var(--text-secondary)] mb-6 leading-relaxed space-y-2">
+    <li>Start with <code class="text-[var(--accent)]">hackit ports scan</code> on common ports before running broad network scans to scope the target surface.</li>
+    <li>Use <code class="text-[var(--accent)]">hackit dirfinder</code> combined with <code class="text-[var(--accent)]">hackit web fuzz</code> for comprehensive web content discovery.</li>
+    <li>Run <code class="text-[var(--accent)]">hackit ssl check</code> and <code class="text-[var(--accent)]">hackit web headers</code> to identify basic security misconfigurations before deeper testing.</li>
+    <li>Leverage <code class="text-[var(--accent)]">hackit util cve --software apache --version 2.4.49</code> to correlate discovered services with known vulnerabilities.</li>
+    <li>Use <code class="text-[var(--accent)]">hackit agent</code> to get AI-assisted analysis of collected results through an interactive session.</li>
+    <li>Run wireless modules from a dedicated Linux environment with proper hardware: <code class="text-[var(--accent)]">hackit wireless</code>.</li>
+  </ul>
+  <CodeBlock code={`# Recommended recon workflow
+hackit ports scan -p 22,80,443,8080,8443 --targets target.com
+hackit dirfinder --url https://target.com
+hackit recon subdomains -d target.com
+hackit web tech --url https://target.com
+hackit ssl check --url https://target.com
+hackit web headers --url https://target.com
+hackit util cve --software apache --version 2.4.49`}
+    lang="bash" />
+  <p class="text-sm sm:text-base text-[var(--text-secondary)] mt-4 leading-relaxed">
+    Always ensure you have explicit written authorization before testing any target. Review tool output carefully and validate findings manually before including them in reports.
+  </p>
+</section>
+</main>
+      <DocTOC headings={headings} />
+    </div>
+    <DocPagination lang={lang} currentPath={Astro.url.pathname} />
+  </div>
+</Layout>

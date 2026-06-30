@@ -1,0 +1,271 @@
+---
+const { lang, t } = Astro.props;
+const currentPath = Astro.url.pathname;
+const isDocsActive = currentPath.includes("/docs");
+const isHomeActive = currentPath === "/" || currentPath === `/${lang}/`;
+
+const languages: Record<string, string> = {
+  en: "English", it: "Italiano", id: "Bahasa Indonesia",
+  ru: "Русский", zh: "中文", ja: "日本語",
+};
+
+// Strip current language prefix to get path suffix for language switching
+const pathSuffix = currentPath.replace(new RegExp('^/' + lang + '(?=/|$)'), '') || '/';
+
+const versions = ["v2.1"];
+
+const searchItems = [
+  "Getting Started", "Installation", "Configuration", "Modules Overview",
+  "API Reference", "Command Reference", "Network Scanning", "Exploit Development",
+  "Reporting", "Contributing Guide",
+];
+---
+
+<header class="fixed top-0 left-0 right-0 z-50 glass-nav" id="site-header">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div id="nav-inner" class="flex items-center justify-between gap-2 nav-inner">
+      <div class="flex items-center gap-5">
+        <a href="/" class="flex items-center gap-2.5 shrink-0 group">
+          <div class="relative">
+            <img id="nav-logo" src="/img/logo.png" alt="HackIT Logo" class="object-contain nav-logo" />
+          </div>
+          <span id="nav-title" class="font-bold tracking-tight block gradient-text nav-title">HackIT</span>
+        </a>
+        <nav class="hidden md:flex items-center gap-0.5">
+          <a href="/" class={"relative px-3.5 py-2 text-sm font-medium rounded-lg transition-all duration-200 " + (isHomeActive ? "text-[var(--accent)] bg-[var(--accent)]/8" : "text-[var(--text-secondary)] hover:text-[var(--text)] hover:bg-[var(--bg-tertiary)]/50")}>{t.nav.home}</a>
+          <a href={`/${lang}/docs/`} class={"relative px-3.5 py-2 text-sm font-medium rounded-lg transition-all duration-200 " + (isDocsActive ? "text-[var(--accent)] bg-[var(--accent)]/8" : "text-[var(--text-secondary)] hover:text-[var(--text)] hover:bg-[var(--bg-tertiary)]/50")}>{t.nav.guide}</a>
+          <a href={`/${lang}/docs/reference/`} class="relative px-3.5 py-2 text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text)] rounded-lg hover:bg-[var(--bg-tertiary)]/50 transition-all duration-200">{t.nav.reference}</a>
+        </nav>
+      </div>
+
+      <div class="hidden md:flex items-center gap-3 flex-1 max-w-sm mx-auto lg:max-w-md">
+        <div class="relative w-full search-container">
+          <svg class="absolute left-3 top-1/2 -translate-y-1/2" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+          </svg>
+          <input
+            type="text"
+            id="search-input"
+            data-lang={lang}
+            placeholder={t.nav.search}
+            class="w-full bg-[var(--bg-secondary)]/50 border border-[var(--border)] rounded-xl py-2 pl-9 pr-14 text-sm text-[var(--text)] placeholder:text-[var(--text-muted)] outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent)]/30 transition-all"
+          />
+          <kbd class="absolute right-2.5 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded-md text-[10px] font-mono border border-[var(--border)] bg-[var(--bg-tertiary)]/50 text-[var(--text-muted)]">Ctrl+K</kbd>
+          <div id="search-results" class="search-dropdown absolute top-full mt-2 left-0 right-0 hidden max-h-80 overflow-y-auto"></div>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-0.5">
+        <div class="relative hidden md:block">
+          <button id="version-btn-v" class="flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-[var(--text-muted)] hover:text-[var(--text)] rounded-lg hover:bg-[var(--bg-tertiary)]/50 transition-colors">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7h-9a5 5 0 0 0-5 5v0a5 5 0 0 0 5 5h1"/><polyline points="17 3 20 7 17 11"/></svg>
+            <span id="version-label">{t.nav.version}</span>
+          </button>
+          <div id="version-dropdown" class="search-dropdown absolute right-0 top-full mt-2 hidden py-1 min-w-[120px]">
+            {versions.map(v => (
+              <button class="w-full text-left px-4 py-2 text-sm text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)] hover:text-[var(--text)] transition-colors">{v}</button>
+            ))}
+          </div>
+        </div>
+
+        <button id="theme-toggle" class="p-2 rounded-lg text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--bg-tertiary)]/50 transition-colors" aria-label="Toggle theme">
+          <svg id="sun-icon" class="hidden dark:block" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+          <svg id="moon-icon" class="dark:hidden" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
+
+        <a href="https://github.com/dextryayers/HackIT" target="_blank" rel="noopener noreferrer" class="hidden sm:flex p-2 rounded-lg text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--bg-tertiary)]/50 transition-colors" aria-label="GitHub">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+        </a>
+
+        <div class="relative">
+          <button id="lang-btn" class="flex items-center gap-1.5 px-2.5 py-2 text-sm font-medium text-[var(--text-muted)] hover:text-[var(--text)] rounded-lg hover:bg-[var(--bg-tertiary)]/50 transition-colors">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            <span class="hidden sm:inline text-xs font-bold tracking-wider uppercase">{lang}</span>
+          </button>
+          <div id="lang-dropdown" class="search-dropdown absolute right-0 top-full mt-2 hidden py-1 min-w-[160px]">
+            {Object.entries(languages).map(([code, name]) => {
+              const localizedHref = `/${code}${pathSuffix}`;
+              return (
+              <a
+                href={localizedHref}
+                data-lang={code}
+                class={`flex items-center gap-2 px-4 py-2 text-sm transition-colors ${code === lang ? 'text-[var(--accent)] bg-[var(--bg-tertiary)] font-semibold' : 'text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)] hover:text-[var(--text)]'}`}
+              >
+                {name}
+              </a>
+            );
+            })}
+          </div>
+        </div>
+
+        <button id="mobile-menu-btn" class="md:hidden p-2 rounded-lg text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--bg-tertiary)]/50 transition-colors" aria-label="Menu">
+          <div id="hamburger" class="flex flex-col gap-1.5">
+            <span class="hamburger-line block w-5 h-0.5 bg-current rounded-full"></span>
+            <span class="hamburger-line block w-5 h-0.5 bg-current rounded-full"></span>
+            <span class="hamburger-line block w-5 h-0.5 bg-current rounded-full"></span>
+          </div>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="mobile-menu" class="md:hidden hidden border-t border-[var(--border)] bg-[var(--bg)] rounded-b-2xl">
+    <div class="px-4 py-4 space-y-1">
+      <div class="relative mb-4">
+        <svg class="absolute left-3 top-1/2 -translate-y-1/2" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <input type="text" id="mobile-search" data-lang={lang} placeholder={t.nav.search} class="w-full bg-[var(--bg-secondary)] border border-[var(--border)] rounded-lg py-2.5 pl-10 pr-4 text-sm text-[var(--text)] placeholder:text-[var(--text-muted)] outline-none focus:border-[var(--accent)] transition-all" />
+      </div>
+      <a href="/" class={"flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg transition-colors " + (isHomeActive ? "text-[var(--accent)] bg-[var(--accent)]/10" : "text-[var(--text-secondary)] hover:text-[var(--accent)] hover:bg-[var(--bg-tertiary)]")}>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>        <polyline points="9 22 9 12 15 12 15 22"/></svg>
+        {t.nav.home}
+      </a>
+      <a href={`/${lang}/docs/`} class={"flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg transition-colors " + (isDocsActive ? "text-[var(--accent)] bg-[var(--accent)]/10" : "text-[var(--text-secondary)] hover:text-[var(--accent)] hover:bg-[var(--bg-tertiary)]")}>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        {t.nav.guide}
+      </a>
+      <a href={`/${lang}/docs/reference/`} class="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--accent)] rounded-lg hover:bg-[var(--bg-tertiary)] transition-colors">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 16 16 12 12 8"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+        {t.nav.reference}
+      </a>
+      <div class="pt-3 mt-3 border-t border-[var(--border)] space-y-1">
+        <div class="px-3 py-2">
+          <span class="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">{t.nav.version}</span>
+          <div class="mt-1 space-y-0.5">
+            {versions.map(v => (
+              <button class="version-mobile block w-full text-left px-3 py-2 text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--accent)] rounded-lg hover:bg-[var(--bg-tertiary)] transition-colors">{v}</button>
+            ))}
+          </div>
+        </div>
+        <a href="https://github.com/dextryayers/HackIT" target="_blank" rel="noopener noreferrer" class="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--accent)] rounded-lg hover:bg-[var(--bg-tertiary)] transition-colors">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+          GitHub
+        </a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<script>
+try {
+(function () {
+  var header = document.getElementById('site-header');
+  if (!header) return;
+  var ticking = false;
+  window.addEventListener('scroll', function () {
+    if (!ticking) {
+      window.requestAnimationFrame(function () {
+        header.classList.toggle('scrolled', window.scrollY > 20);
+        ticking = false;
+      });
+      ticking = true;
+    }
+  });
+})();
+(function () {
+  var themeToggle = document.getElementById('theme-toggle');
+  if (themeToggle) {
+    themeToggle.addEventListener('click', function () {
+      document.documentElement.classList.add('theme-transition');
+      var isDark = document.documentElement.classList.toggle('dark');
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      setTimeout(function () { document.documentElement.classList.remove('theme-transition'); }, 300);
+    });
+  }
+})();
+(function () {
+  var versionBtn = document.getElementById('version-btn-v');
+  var versionDropdown = document.getElementById('version-dropdown');
+  if (!versionBtn || !versionDropdown) return;
+  versionBtn.addEventListener('click', function (e) {
+    e.stopPropagation();
+    versionDropdown.classList.toggle('hidden');
+  });
+  document.addEventListener('click', function () { versionDropdown.classList.add('hidden'); });
+  versionDropdown.querySelectorAll('button').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var lbl = document.getElementById('version-label');
+      if (lbl) lbl.textContent = btn.textContent;
+      versionDropdown.classList.add('hidden');
+    });
+  });
+})();
+(function () {
+  var mobileVersionBtns = document.querySelectorAll('.version-mobile');
+  mobileVersionBtns.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var lbl = document.getElementById('version-label');
+      if (lbl) lbl.textContent = btn.textContent;
+    });
+  });
+})();
+(function () {
+  var langBtn = document.getElementById('lang-btn');
+  var langDropdown = document.getElementById('lang-dropdown');
+  if (!langBtn || !langDropdown) return;
+  langBtn.addEventListener('click', function (e) {
+    e.stopPropagation();
+    langDropdown.classList.toggle('hidden');
+  });
+  document.addEventListener('click', function () { langDropdown.classList.add('hidden'); });
+  langDropdown.querySelectorAll('a[data-lang]').forEach(function(a) {
+    a.addEventListener('click', function() {
+      try { localStorage.setItem('lang', this.getAttribute('data-lang')); } catch(e) {}
+    });
+  });
+})();
+(function () {
+  var mobileBtn = document.getElementById('mobile-menu-btn');
+  var mobileMenu = document.getElementById('mobile-menu');
+  var hamburger = document.getElementById('hamburger');
+  if (!mobileBtn || !mobileMenu) return;
+  mobileBtn.addEventListener('click', function () {
+    var isOpen = !mobileMenu.classList.contains('hidden');
+    mobileMenu.classList.toggle('hidden');
+    if (hamburger) hamburger.classList.toggle('hamburger-open');
+    if (!isOpen) {
+      mobileMenu.classList.remove('mobile-closed');
+      mobileMenu.classList.add('mobile-open');
+    } else {
+      mobileMenu.classList.remove('mobile-open');
+      mobileMenu.classList.add('mobile-closed');
+    }
+  });
+})();
+(function () {
+  var searchInput = document.getElementById('search-input');
+  var searchResults = document.getElementById('search-results');
+  if (!searchInput || !searchResults) return;
+  var items = [
+    "Getting Started", "Installation", "Configuration", "Modules Overview",
+    "API Reference", "Command Reference", "Network Scanning",
+    "Reporting",
+  ];
+  searchInput.addEventListener('input', function () {
+    var q = searchInput.value.toLowerCase();
+    if (!q) { searchResults.classList.add('hidden'); return; }
+    var filtered = items.filter(function (item) { return item.toLowerCase().includes(q); });
+    var lang = searchInput.getAttribute('data-lang') || 'en';
+    if (filtered.length === 0) {
+      searchResults.innerHTML = '<div class="px-4 py-3 text-sm text-[var(--text-muted)]">No results found</div>';
+    } else {
+      searchResults.innerHTML = filtered.map(function (item) {
+        return '<a href="/' + lang + '/docs/' + item.toLowerCase().replace(/\s+/g, '-') + '/" class="block px-4 py-2.5 text-sm text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)] hover:text-[var(--accent)] transition-colors border-b border-[var(--border)] last:border-0">' + item + '</a>';
+      }).join('');
+    }
+    searchResults.classList.remove('hidden');
+  });
+  searchInput.addEventListener('focus', function () {
+    if (searchInput.value) searchResults.classList.remove('hidden');
+  });
+  document.addEventListener('click', function (e) {
+    if (!e.target.closest('.search-container')) searchResults.classList.add('hidden');
+  });
+  document.addEventListener('keydown', function (e) {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+      e.preventDefault();
+      searchInput.focus();
+    }
+  });
+})();
+} catch(e) { console.error('Navbar:', e); }
+</script>

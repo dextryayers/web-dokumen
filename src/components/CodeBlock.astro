@@ -1,0 +1,33 @@
+---
+const { code, lang, t } = Astro.props as { code: string; lang?: string; t?: any };
+const language = lang || "bash";
+---
+
+<div class="code-block-wrapper group relative my-4">
+  <div class="flex items-center justify-between px-4 py-2 bg-[var(--bg-tertiary)] border-b border-[var(--border)] rounded-t-lg">
+    <span class="text-xs font-mono text-[var(--text-muted)] uppercase tracking-wider">{language}</span>
+    <button class="copy-btn text-xs font-medium text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors opacity-0 group-hover:opacity-100" data-code={code}>
+      {t?.cli?.copy || "Copy"}
+    </button>
+  </div>
+  <pre class="bg-[var(--bg-secondary)] border border-[var(--border)] border-t-0 rounded-b-lg p-4 overflow-x-auto"><code class="text-sm font-mono text-[var(--text)] leading-relaxed whitespace-pre">{code}</code></pre>
+</div>
+
+<script>
+try {
+(function () {
+  document.querySelectorAll('.copy-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var code = this.getAttribute('data-code');
+      if (!code) return;
+      navigator.clipboard.writeText(code).then(function () {
+        var text = this.textContent;
+        this.textContent = 'Copied!';
+        var self = this;
+        setTimeout(function () { self.textContent = text; }, 2000);
+      }.bind(this)).catch(function () {});
+    });
+  });
+})();
+} catch (e) { console.error('CodeBlock:', e); }
+</script>

@@ -1,0 +1,66 @@
+---
+const languages = [
+  { name: "Python", icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/python/python-original.svg", brand: "#3776AB" },
+  { name: "JavaScript", icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/javascript/javascript-original.svg", brand: "#F7DF1E" },
+  { name: "Rust", icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/rust/rust-original.svg", brand: "#DE5833" },
+  { name: "Go", icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/go/go-original-wordmark.svg", brand: "#00ADD8" },
+  { name: "Ruby", icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/ruby/ruby-original.svg", brand: "#CC342D" },
+  { name: "C", icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/c/c-original.svg", brand: "#00599C" },
+  { name: "C++", icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/cplusplus/cplusplus-original.svg", brand: "#00599C" },
+  { name: "Lua", icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/lua/lua-original.svg", brand: "#00007C" },
+  { name: "Bash", icon: "https://cdn.simpleicons.org/gnubash/4EAA25", brand: "#4EAA25" },
+  { name: "C#", icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/csharp/csharp-original.svg", brand: "#68217A" },
+];
+---
+
+<section class="relative py-14 overflow-hidden" data-reveal>
+  <div class="absolute inset-0 bg-[var(--bg-secondary)] border-y border-[var(--border)]"></div>
+  <div class="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-[var(--bg-secondary)] to-transparent z-10"></div>
+  <div class="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-[var(--bg-secondary)] to-transparent z-10"></div>
+
+  <div class="relative marquee-wrapper overflow-hidden" style="mask-image:linear-gradient(to right,transparent 0%,black 5%,black 95%,transparent 100%);-webkit-mask-image:linear-gradient(to right,transparent 0%,black 5%,black 95%,transparent 100%)">
+    <div id="marquee-track" class="flex gap-6 w-max items-center">
+      {[...languages, ...languages, ...languages].map((lang, i) => (
+        <div
+          class="relative group/item flex flex-col items-center justify-center p-4 rounded-xl border border-[var(--border)] bg-[var(--card-bg)] shadow-sm hover:shadow-lg transition-all duration-300 cursor-default hover:scale-110 hover:z-20"
+          style={`--brand: ${lang.brand}`}
+        >
+          <div class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-10 rounded-r-full opacity-0 group-hover/item:opacity-100 transition-all duration-300" style="background:var(--brand);box-shadow:0 0 12px var(--brand)"></div>
+          <div class="absolute inset-0 rounded-xl opacity-0 group-hover/item:opacity-10 transition-all duration-300" style="background:var(--brand)"></div>
+          <img
+            src={lang.icon}
+            alt={lang.name}
+            width="52"
+            height="52"
+            loading="lazy"
+            class="shrink-0 relative z-10 group-hover/item:scale-110 transition-transform duration-300"
+            style="filter: drop-shadow(0 1px 2px rgba(0,0,0,0.1))"
+            onerror={"this.onerror=null;this.src='data:image/svg+xml,%3Csvg xmlns=\"http://www.w3.org/2000/svg\" width=\"52\" height=\"52\" viewBox=\"0 0 52 52\"%3E%3Crect width=\"52\" height=\"52\" rx=\"8\" fill=\"" + lang.brand + "\"/%3E%3Ctext x=\"26\" y=\"34\" text-anchor=\"middle\" fill=\"white\" font-size=\"20\" font-weight=\"bold\" font-family=\"sans-serif\"%3E" + lang.name[0] + "%3C/text%3E%3C/svg%3E'"}
+          />
+          <span class="absolute -bottom-8 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-md text-[10px] font-bold whitespace-nowrap opacity-0 group-hover/item:opacity-100 transition-all duration-300 translate-y-0 group-hover/item:translate-y-0" style="background:var(--brand);color:white">{lang.name}</span>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<script>
+import gsap from 'gsap';
+try {
+(function () {
+  var track = document.getElementById('marquee-track');
+  if (!track) return;
+  var rm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (rm) return;
+  var itemWidth = track.scrollWidth / 3;
+  var tw = gsap.to(track, {
+    x: -itemWidth,
+    duration: 50,
+    ease: 'none',
+    repeat: -1,
+  });
+  track.addEventListener('mouseenter', function () { tw.timeScale(0); });
+  track.addEventListener('mouseleave', function () { tw.timeScale(1); });
+})();
+} catch(e) { console.error('Marquee:', e); }
+</script>

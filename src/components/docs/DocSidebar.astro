@@ -1,0 +1,114 @@
+---
+import { docNav, type DocNavSection } from "./docNav";
+
+const { lang, currentPath, headings } = Astro.props as {
+  lang: string;
+  currentPath: string;
+  headings?: { id: string; text: string; level: number }[];
+};
+const nav = docNav[lang] || docNav.en;
+const cleanPath = currentPath.replace(new RegExp("^/" + lang), "").replace(/\/$/, "") || "/docs";
+const isDocsHome = cleanPath === "/docs";
+---
+
+<aside class="w-96 hidden lg:block fixed left-0 top-0 h-screen border-r border-[var(--border)] bg-[var(--bg-secondary)] z-40">
+  <div class="h-full overflow-y-auto pt-20 pb-8">
+    <div class="px-6">
+      <div class="relative mb-6 mx-1">
+        <svg class="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <input
+          type="text"
+          placeholder="Search docs..."
+          class="w-full bg-[var(--bg)] border border-[var(--border)] rounded-lg py-2 pl-9 pr-3 text-sm text-[var(--text)] placeholder:text-[var(--text-muted)] outline-none focus:border-[var(--accent)] transition-colors"
+          oninput="var q=this.value.toLowerCase();document.querySelectorAll('.sidebar-link').forEach(function(l){var t=l.textContent.toLowerCase();l.style.display=t.indexOf(q)===-1?'none':''})"
+        />
+      </div>
+      <div class="space-y-6">
+        {nav.sections.map((section: DocNavSection, si: number) => (
+          <div data-index={si}>
+            <div class="flex items-center gap-2 mb-2 px-2">
+              <span class="text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--text-muted)]">{section.title}</span>
+              <span class="h-px flex-1 bg-[var(--border)]"></span>
+            </div>
+            <nav class="space-y-px">
+              {section.items.map((item, ii: number) => {
+                const itemHref = "/" + lang + item.href + "/";
+                const isActive = cleanPath === item.href || currentPath === itemHref;
+                const showSubItems = isActive && headings && !isDocsHome;
+                return (
+                  <div>
+                    <a
+                      href={itemHref}
+                      class={"sidebar-link flex items-center gap-2.5 text-sm px-3 py-1.5 rounded-md transition-all duration-150 " + (
+                        isActive
+                          ? "bg-[var(--accent)]/10 text-[var(--accent)] font-medium"
+                          : "text-[var(--text-secondary)] hover:text-[var(--text)] hover:bg-[var(--bg-tertiary)]"
+                      )}
+                      data-index={ii}
+                    >
+                      {isActive && (
+                        <span class="w-0.5 h-4 rounded-full bg-[var(--accent)] shrink-0"></span>
+                      )}
+                      {!isActive && (
+                        <span class="w-0.5 h-0.5 rounded-full bg-[var(--text-muted)] shrink-0 opacity-40"></span>
+                      )}
+                      <span>{item.title}</span>
+                    </a>
+                    {showSubItems && (
+                      <div class="ml-4 mt-0.5 border-l border-[var(--border)] pl-3 space-y-0.5">
+                        {headings.filter(h => h.level <= 2).map((h, hi) => (
+                          <a
+                            href={"#" + h.id}
+                            class="sidebar-sub-link flex items-center gap-2 text-xs py-1 px-2 rounded transition-all duration-150 text-[var(--text-muted)] hover:text-[var(--accent)] hover:bg-[var(--bg-tertiary)]"
+                            data-section-id={h.id}
+                            data-index={hi}
+                          >
+                            <span class="w-1 h-1 rounded-full bg-[var(--border)] shrink-0 transition-colors duration-150"></span>
+                            <span>{h.text}</span>
+                          </a>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </nav>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</aside>
+
+<script>
+(function() {
+  var subLinks = document.querySelectorAll('.sidebar-sub-link');
+  if (!subLinks.length) return;
+  var sections = [];
+  subLinks.forEach(function(link) {
+    var id = link.getAttribute('data-section-id');
+    var el = document.getElementById(id);
+    if (el) sections.push({ el: el, link: link });
+  });
+  if (!sections.length) return;
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        sections.forEach(function(s) {
+          var dot = s.link.querySelector('span');
+          if (s.el === entry.target) {
+            s.link.classList.add('text-[var(--accent)]', 'font-medium');
+            s.link.classList.remove('text-[var(--text-muted)]');
+            if (dot) { dot.classList.add('bg-[var(--accent)]'); dot.classList.remove('bg-[var(--border)]'); }
+          } else {
+            s.link.classList.remove('text-[var(--accent)]', 'font-medium');
+            s.link.classList.add('text-[var(--text-muted)]');
+            if (dot) { dot.classList.remove('bg-[var(--accent)]'); dot.classList.add('bg-[var(--border)]'); }
+          }
+        });
+      }
+    });
+  }, { rootMargin: '-80px 0px -60% 0px', threshold: 0 });
+  sections.forEach(function(s) { observer.observe(s.el); });
+})();
+</script>

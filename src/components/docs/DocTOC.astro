@@ -1,0 +1,58 @@
+---
+const { headings } = Astro.props as { id: string; text: string; level: number }[];
+---
+
+<aside class="w-72 shrink-0 hidden xl:block self-start h-fit">
+  <div class="sticky top-20 overflow-y-auto" style="max-height: calc(100vh - 5rem)">
+    <div class="py-8 pl-6 border-l border-[var(--border)]">
+      <h4 class="text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--text-muted)] mb-4">On this page</h4>
+      <nav class="space-y-0.5">
+        {headings.filter(h => h.level <= 3).map((h, i) => (
+          <a
+            href={"#" + h.id}
+            class={"toc-link block text-sm transition-all duration-150 py-1 border-l-2 pl-3 leading-snug " + (
+              h.level === 3
+                ? "pl-7 text-xs text-[var(--text-muted)]"
+                : "text-[var(--text-secondary)]"
+            )}
+            style="border-color: var(--border);"
+            data-toc-id={h.id}
+            data-index={i}
+          >
+            {h.text}
+          </a>
+        ))}
+      </nav>
+    </div>
+  </div>
+</aside>
+
+<script>
+(function() {
+  var tocLinks = document.querySelectorAll('.toc-link');
+  if (!tocLinks.length) return;
+  var sections = [];
+  tocLinks.forEach(function(link) {
+    var id = link.getAttribute('data-toc-id');
+    var el = document.getElementById(id);
+    if (el) sections.push({ el: el, link: link });
+  });
+  if (!sections.length) return;
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        sections.forEach(function(s) {
+          if (s.el === entry.target) {
+            s.link.style.borderColor = 'var(--accent)';
+            s.link.style.color = 'var(--accent)';
+          } else {
+            s.link.style.borderColor = 'var(--border)';
+            s.link.style.color = '';
+          }
+        });
+      }
+    });
+  }, { rootMargin: '-80px 0px -60% 0px', threshold: 0 });
+  sections.forEach(function(s) { observer.observe(s.el); });
+})();
+</script>
